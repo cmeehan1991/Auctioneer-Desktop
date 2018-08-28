@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.PrefixSelectionComboBox?>
+
+<AnchorPane id="AnchorPane" maxHeight="430.0" maxWidth="600.0" minHeight="387.0" minWidth="548.0" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.items.ItemFXMLController">
+   <children>
+      <GridPane fx:id="mainContent" hgap="5.0" layoutY="52.0" maxHeight="400.0" prefHeight="352.0" prefWidth="529.0" vgap="5.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="52.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="165.0" minWidth="61.0" prefWidth="80.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.0" minWidth="10.0" prefWidth="182.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="165.0" minWidth="92.0" prefWidth="142.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="165.0" minWidth="112.0" prefWidth="138.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Item ID" />
+            <TextField fx:id="itemNumberTextField" editable="false" prefHeight="27.0" prefWidth="100.0" GridPane.rowIndex="1" />
+            <TextField fx:id="itemNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <PrefixSelectionComboBox fx:id="itemCategoryComboBox" prefHeight="27.0" prefWidth="169.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="minimumBidTextField" alignment="CENTER_RIGHT" promptText="0.00" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="4">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets></TextField>
+            <TextField fx:id="auctionSearchField" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+            <ListView fx:id="auctionListView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="7" GridPane.rowSpan="4" />
+            <RadioButton fx:id="liveAuctionRadioButton" mnemonicParsing="false" selected="true" text="Live Auction" GridPane.columnIndex="2" GridPane.rowIndex="6">
+               <toggleGroup>
+                  <ToggleGroup fx:id="itemAuctionTypeGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="silentAuctionRadioButton" mnemonicParsing="false" text="Silent Auction" toggleGroup="$itemAuctionTypeGroup" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+            <Label text="Name" GridPane.columnIndex="1" />
+            <Label text="Description" GridPane.rowIndex="2" />
+            <Label text="Minimum Bid" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <ImageView fitHeight="58.0" fitWidth="84.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="7" GridPane.rowSpan="4">
+               <image>
+                  <Image url="@../images/auction.jpg" />
+               </image></ImageView>
+            <Label fx:id="itemClosedLabel" alignment="TOP_CENTER" prefHeight="28.0" prefWidth="163.0" text="Closed" textAlignment="CENTER" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="9">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+            <Label text="Item Category" GridPane.columnIndex="2" />
+            <Label text="Auction" GridPane.rowIndex="5" />
+            <Label text="Auction Type" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <TextArea fx:id="itemDescriptionTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnSpan="3" GridPane.rowIndex="3" GridPane.rowSpan="2" />
+            <CheckBox fx:id="enableMinimumBidCheckBox" mnemonicParsing="false" onAction="#enableMinimumBidAction" text="Enable Min. Bid" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </GridPane>
+      <ProgressIndicator fx:id="progressIndicator" AnchorPane.bottomAnchor="167.0" AnchorPane.leftAnchor="248.0" AnchorPane.rightAnchor="248.0" AnchorPane.topAnchor="167.0" />
+      <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+          <Button mnemonicParsing="false" onAction="#saveItem" text="Save " />
+         </items>
+      </ToolBar>
+   </children>
+</AnchorPane>

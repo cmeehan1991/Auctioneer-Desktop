@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="900.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.bidder.BidderListFXMLController">
+   <children>
+      <ProgressIndicator fx:id="progressIndicator" AnchorPane.bottomAnchor="227.0" AnchorPane.leftAnchor="433.5" AnchorPane.rightAnchor="433.5" AnchorPane.topAnchor="227.0" />
+      <TableView fx:id="biddersTableView" layoutY="84.0" prefHeight="415.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="85.0" />
+      <TextField fx:id="searchInput" layoutX="11.0" layoutY="48.0" prefHeight="27.0" prefWidth="379.0" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="48.0" />
+      <Button fx:id="searchButton" layoutX="400.0" layoutY="46.0" mnemonicParsing="false" onAction="#search" prefHeight="27.0" prefWidth="39.0" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="46.0">
+         <graphic>
+            <ImageView fitHeight="22.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/search.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <Button fx:id="viewBidderButton" mnemonicParsing="false" onAction="#viewBidder" text="View" />
+          <Button fx:id="addSelectedBidderButton" mnemonicParsing="false" onAction="#addSelectedBidderAction" text="Add Selected Bidder" />
+        </items>
+      </ToolBar>
+   </children>
+</AnchorPane>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import org.controlsfx.control.PrefixSelectionComboBox?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="630.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.bidder.BidderFXMLController">
+   <children>
+      <ToolBar fx:id="userInformationToolbar" layoutY="-14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <Button minWidth="48.0" mnemonicParsing="false" onAction="#saveBidder" prefHeight="34.0" prefWidth="48.0">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/save.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+          <Button minWidth="48.0" mnemonicParsing="false" onAction="#checkOut" prefHeight="18.0" prefWidth="48.0">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/export.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </items>
+      </ToolBar>
+      <TabPane fx:id="userInformationTabPane" layoutX="14.0" layoutY="66.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="46.0">
+         <tabs>
+            <Tab closable="false" text="Information">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <GridPane hgap="5.0" prefHeight="276.0" prefWidth="574.0" vgap="5.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="0.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="85.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="296.0" minWidth="10.0" prefWidth="196.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="328.0" minWidth="10.0" prefWidth="196.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="328.0" minWidth="10.0" prefWidth="85.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="ID No." />
+                              <TextField fx:id="bidderIdTextField" editable="false" GridPane.rowIndex="1" />
+                              <Label text="Prefix" GridPane.rowIndex="2" />
+                              <Label fx:id="firstNameLabel" text="First Name" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="lastNameLabel" text="Last Name" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Label text="Suffix" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <TextField fx:id="firstNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <TextField fx:id="lastNameTextField" prefHeight="27.0" prefWidth="168.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <PrefixSelectionComboBox fx:id="suffixComboBox" prefHeight="27.0" prefWidth="99.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Label fx:id="streetAddressLabel" text="Street Address" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+                              <Label text="Suite/Apartment No." GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                              <TextField fx:id="streetAddressTextField" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+                              <TextField fx:id="suiteTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                              <Label fx:id="cityLabel" text="City" GridPane.rowIndex="6" />
+                              <Label text="State" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                              <Label fx:id="postalCodeLabel" text="Postal Code" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                              <TextField fx:id="cityTextField" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+                              <PrefixSelectionComboBox fx:id="stateComboBox" prefHeight="27.0" prefWidth="210.0" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                              <TextField fx:id="postalCodeTextField" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                              <Label fx:id="phoneNumberLabel" text="Phone No." GridPane.rowIndex="8" />
+                              <Label fx:id="emailAddressLabel" text="Email Address" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+                              <TextField fx:id="phoneNumberTextField" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                              <TextField fx:id="emailAddressTextField" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                              <PrefixSelectionComboBox fx:id="bidderPrefixComboBox" prefHeight="27.0" prefWidth="107.0" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" text="Auctions">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="bidderAuctionsTableView" layoutX="145.0" layoutY="-19.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="ID" />
+                            <TableColumn prefWidth="320.0" text="Auction" />
+                              <TableColumn prefWidth="234.0" text="Auction Date" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab closable="false" text="Auction History">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="bidderAuctionHistoryTableView" layoutX="-36.0" layoutY="-19.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="ID" />
+                            <TableColumn prefWidth="324.0" text="Auction" />
+                              <TableColumn prefWidth="146.0" text="Auction Date" />
+                              <TableColumn prefWidth="84.0" text="Items Won" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+      <ProgressIndicator fx:id="progressIndicator" AnchorPane.bottomAnchor="173.5" AnchorPane.leftAnchor="298.5" AnchorPane.rightAnchor="298.5" AnchorPane.topAnchor="173.5" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,13 @@
+Connection conn = new DBConnection().connect();
+String sql = "";
+try{
+  PreparedStatement ps = conn.prepareStatement(sql);  
+}catch(SQLException ex){
+    System.err.println(ex.getMessage());
+}finally{
+    try{
+        conn.close();
+    }catch(SQLException ex){
+        System.err.println(ex.getMessage());
+    }
+}
