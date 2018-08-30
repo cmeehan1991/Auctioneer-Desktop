@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.main.MainFXMLController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <left>
+      <VBox fx:id="navigationItemsBox" prefHeight="557.0" prefWidth="144.0" styleClass="navigation-window" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="146.0" fitWidth="149.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/auction.jpg" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" prefHeight="23.0" prefWidth="199.0" styleClass="navigation-window__section-heading" text="Auctioneer" />
+            <Button fx:id="auctionDashboardButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#auctionDashboardAction" prefHeight="60.0" prefWidth="150.0" styleClass="navigation-window__button" text="Auctions">
+               <graphic>
+                  <FontAwesomeIconView glyphName="GAVEL" size="14" text="" />
+               </graphic>
+            </Button>
+            <Button fx:id="bidsListButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#viewBidsListAction" prefHeight="60.0" prefWidth="150.0" styleClass="navigation-window__button" text="Bids">
+               <graphic>
+                  <FontAwesomeIconView glyphName="TICKET" size="14" />
+               </graphic>
+            </Button>
+            <Button fx:id="bidderListButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#viewBidderListAction" prefHeight="60.0" prefWidth="150.0" styleClass="navigation-window__button" text="Bidders">
+               <graphic>
+                  <FontAwesomeIconView glyphName="USERS" size="14" />
+               </graphic>
+            </Button>
+            <Button fx:id="itemListButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#viewAuctionItemsListAction" prefHeight="60.0" prefWidth="150.0" styleClass="navigation-window__button" text="Items">
+               <graphic>
+                  <FontAwesomeIconView glyphName="SITEMAP" />
+               </graphic>
+            </Button>
+            <Button fx:id="checkoutButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#checkoutAction" prefHeight="60.0" prefWidth="150.0" styleClass="navigation-window__button" text="Check Out">
+               <graphic>
+                  <FontAwesomeIconView glyphName="MONEY" />
+               </graphic>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <ScrollPane fx:id="scrollPane" minHeight="400.0" minWidth="400.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

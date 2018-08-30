@@ -48,246 +48,248 @@ import javafx.stage.Stage;
  * @author cmeehan
  */
 public class AuctionFXMLController implements Initializable {
-	public static int auctionId;
 
-	@FXML
-	TextField auctionIdTextField, auctionTitleTextField, buildingNameTextField, primaryAddressTextField, secondaryAddressTextField,
-			cityTextField, postalCodeTextField;
+    public static int auctionId;
 
-	@FXML
-	TextArea auctionDescriptionTextArea;
+    @FXML
+    TextField auctionIdTextField, auctionTitleTextField, buildingNameTextField, primaryAddressTextField, secondaryAddressTextField,
+            cityTextField, postalCodeTextField;
 
-	@FXML
-	PrefixSelectionComboBox<String> auctionTypeComboBox, stateComboBox, countryComboBox;
+    @FXML
+    TextArea auctionDescriptionTextArea;
 
-	@FXML
-	CheckBox publicCheckBox;
+    @FXML
+    PrefixSelectionComboBox<String> auctionTypeComboBox, stateComboBox, countryComboBox;
 
-	@FXML
-	DatePicker auctionDatePicker;
+    @FXML
+    CheckBox publicCheckBox;
 
-	@FXML
-	TableView<AuctionItem> auctionItemsTableView;
+    @FXML
+    DatePicker auctionDatePicker;
 
-	@FXML
-	TableView<Attendees> auctionAttendeeTableView;
+    @FXML
+    TableView<AuctionItem> auctionItemsTableView;
 
-	@FXML
-	ProgressIndicator progressIndicator;
+    @FXML
+    TableView<Attendees> auctionAttendeeTableView;
 
-	protected String id, title, description, type, dateTime, buildingName, primaryAddress, secondaryAddress, city, postalCode, state,
-			country;
-	protected boolean isPublic;
-	private ArrayList<String> missingItems;
-	public boolean isNew;
-	private AuctionItemsTableViewController auctionItemsTableViewController;
-	private AttendeesTableController attendeesTableController;
+    @FXML
+    ProgressIndicator progressIndicator;
 
-	@FXML
-	protected void addAttendeeAction(ActionEvent event) throws IOException {
-		BidderListMain bidderListMain = new BidderListMain();
-		bidderListMain.addAuctionBidder = true;
-		bidderListMain.auctionId = String.valueOf(auctionId);
-		bidderListMain.auctionController = this;
-		bidderListMain.start(new Stage());
-	}
+    protected String id, title, description, type, dateTime, buildingName, primaryAddress, secondaryAddress, city, postalCode, state,
+            country;
+    protected boolean isPublic;
+    private ArrayList<String> missingItems;
+    public boolean isNew;
+    private AuctionItemsTableViewController auctionItemsTableViewController;
+    private AttendeesTableController attendeesTableController;
 
-	@FXML
-	protected void addAuctionItemAction(ActionEvent even) throws IOException {
-		System.out.println(auctionId);
-		ViewItemsMain viewItemsMain = new ViewItemsMain();
-		viewItemsMain.addItemsToAuction = true;
-		viewItemsMain.auctionController = this;
-		viewItemsMain.start(new Stage());
-	}
+    @FXML
+    protected void addAttendeeAction(ActionEvent event) throws IOException {
+        BidderListMain bidderListMain = new BidderListMain();
+        bidderListMain.addAuctionBidder = true;
+        bidderListMain.auctionId = String.valueOf(auctionId);
+        bidderListMain.auctionController = this;
+        bidderListMain.start(new Stage());
+    }
 
-	private void assignValues() {
-		this.id = auctionIdTextField.getText().trim().isEmpty() ? null : auctionIdTextField.getText();
-		this.title = auctionTitleTextField.getText();
-		this.description = auctionDescriptionTextArea.getText();
-		this.type = auctionTypeComboBox.getSelectionModel().getSelectedItem();
-		this.dateTime = auctionDatePicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		this.buildingName = buildingNameTextField.getText();
-		this.primaryAddress = primaryAddressTextField.getText();
-		this.secondaryAddress = secondaryAddressTextField.getText();
-		this.city = cityTextField.getText();
-		this.state = stateComboBox.getSelectionModel().getSelectedIndex() < 0 ? null
-				: stateComboBox.getSelectionModel().getSelectedItem().toString();
-		this.postalCode = postalCodeTextField.getText();
-		this.country = countryComboBox.getSelectionModel().getSelectedItem().toString();
-		this.isPublic = publicCheckBox.isSelected();
-	}
+    @FXML
+    protected void addAuctionItemAction(ActionEvent even) throws IOException {
+        System.out.println(auctionId);
+        ViewItemsMain viewItemsMain = new ViewItemsMain();
+        viewItemsMain.addItemsToAuction = true;
+        viewItemsMain.auctionController = this;
+        viewItemsMain.start(new Stage());
+    }
 
-	/**
-	 * Returns a string with the first letter being capitalized. Ex.: live -> Live
-	 * 
-	 * @param val
-	 * @return
-	 */
-	private String capitalizeFirstLetter(String val) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(val.substring(0, 1).toUpperCase());
-		sb.append(val.substring(1).toLowerCase());
-		return sb.toString();
-	}
+    private void assignValues() {
+        this.id = auctionIdTextField.getText().trim().isEmpty() ? null : auctionIdTextField.getText();
+        this.title = auctionTitleTextField.getText();
+        this.description = auctionDescriptionTextArea.getText();
+        this.type = auctionTypeComboBox.getSelectionModel().getSelectedItem();
+        this.dateTime = auctionDatePicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.buildingName = buildingNameTextField.getText();
+        this.primaryAddress = primaryAddressTextField.getText();
+        this.secondaryAddress = secondaryAddressTextField.getText();
+        this.city = cityTextField.getText();
+        this.state = stateComboBox.getSelectionModel().getSelectedIndex() < 0 ? null
+                : stateComboBox.getSelectionModel().getSelectedItem().toString();
+        this.postalCode = postalCodeTextField.getText();
+        this.country = countryComboBox.getSelectionModel().getSelectedItem().toString();
+        this.isPublic = publicCheckBox.isSelected();
+    }
 
-	@FXML
-	protected void createNewAuctionAction(ActionEvent event) throws IOException {
-		AuctionMain auctionMain = new AuctionMain();
-		auctionMain.start(new Stage());
-	}
+    /**
+     * Returns a string with the first letter being capitalized. Ex.: live ->
+     * Live
+     *
+     * @param val
+     * @return
+     */
+    private String capitalizeFirstLetter(String val) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(val.substring(0, 1).toUpperCase());
+        sb.append(val.substring(1).toLowerCase());
+        return sb.toString();
+    }
 
-	public void getAuction(String auctionId) {
-		progressIndicator.setVisible(true);
-		progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-		// Use and executor to get the auction information
-		ExecutorService executor = Executors.newCachedThreadPool();
-		executor.submit(() -> {
-			HashMap<String, String> auction = new Auction().getAuction(auctionId);
+    @FXML
+    protected void createNewAuctionAction(ActionEvent event) throws IOException {
+       
+    }
 
-			// Get the auction items and attendees
-			ObservableList<AuctionItem> data = new Auction().getAuctionItems(auction.get("ID"));
-			ObservableList<Attendees> attendeesList = new Auction().getAttendees(auctionId);
+    public void getAuction(String auctionId) {
+        progressIndicator.setVisible(true);
+        progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        // Use and executor to get the auction information
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(() -> {
+            HashMap<String, String> auction = new Auction().getAuction(auctionId);
 
-			Platform.runLater(() -> {
-				AuctionFXMLController.auctionId = Integer.parseInt(auction.get("ID"));
-				this.id = auction.get("ID");
-				auctionIdTextField.setText(auction.get("ID"));
-				auctionTitleTextField.setText(auction.get("NAME"));
-				auctionDescriptionTextArea.setText(auction.get("DESCRIPTION"));
-				primaryAddressTextField.setText(auction.get("PRIMARY_ADDRESS"));
-				secondaryAddressTextField.setText(auction.get("SECONDARY_ADDRESS"));
-				cityTextField.setText(auction.get("CITY"));
-				stateComboBox.getSelectionModel().select(auction.get("STATE"));
-				postalCodeTextField.setText(auction.get("POSTAL_CODE"));
-				countryComboBox.getSelectionModel().select(auction.get("COUNTRY"));
-				buildingNameTextField.setText(auction.get("BUILDING_NAME"));
-				publicCheckBox.setSelected(Boolean.parseBoolean(auction.get("PUBLIC").toString()));
-				auctionTypeComboBox.getSelectionModel().select(capitalizeFirstLetter(auction.get("TYPE")));
-				auctionDatePicker.setValue(LocalDate.parse(auction.get("AUCTION_DATE")));
-				auctionItemsTableView.getItems().setAll(data);
-				auctionAttendeeTableView.getItems().setAll(attendeesList);
-				progressIndicator.setVisible(false);
-				progressIndicator.setProgress(0.0);
-			});
-			executor.shutdown();
-		});
-	}
+            // Get the auction items and attendees
+            ObservableList<AuctionItem> data = new Auction().getAuctionItems(auction.get("ID"));
+            ObservableList<Attendees> attendeesList = new Auction().getAttendees(auctionId);
 
-	/**
-	 * Initializes the controller class.
-	 */
-	public void initialize(URL url, ResourceBundle rb) {
-		// Hide the progress indicator on load
-		progressIndicator.setVisible(false);
+            Platform.runLater(() -> {
+                AuctionFXMLController.auctionId = Integer.parseInt(auction.get("ID"));
+                this.id = auction.get("ID");
+                auctionIdTextField.setText(auction.get("ID"));
+                auctionTitleTextField.setText(auction.get("NAME"));
+                auctionDescriptionTextArea.setText(auction.get("DESCRIPTION"));
+                primaryAddressTextField.setText(auction.get("PRIMARY_ADDRESS"));
+                secondaryAddressTextField.setText(auction.get("SECONDARY_ADDRESS"));
+                cityTextField.setText(auction.get("CITY"));
+                stateComboBox.getSelectionModel().select(auction.get("STATE"));
+                postalCodeTextField.setText(auction.get("POSTAL_CODE"));
+                countryComboBox.getSelectionModel().select(auction.get("COUNTRY"));
+                buildingNameTextField.setText(auction.get("BUILDING_NAME"));
+                publicCheckBox.setSelected(Boolean.parseBoolean(auction.get("PUBLIC").toString()));
+                auctionTypeComboBox.getSelectionModel().select(capitalizeFirstLetter(auction.get("TYPE")));
+                auctionDatePicker.setValue(LocalDate.parse(auction.get("AUCTION_DATE")));
+                auctionItemsTableView.getItems().setAll(data);
+                auctionAttendeeTableView.getItems().setAll(attendeesList);
+                progressIndicator.setVisible(false);
+                progressIndicator.setProgress(0.0);
+            });
+            executor.shutdown();
+        });
+    }
 
-		// Assign combo box values
-		auctionTypeComboBox.getItems().setAll(AUCTION_TYPES);
-		auctionTypeComboBox.getSelectionModel().select(0);
-		stateComboBox.getItems().setAll(STATES);
-		countryComboBox.getItems().setAll(COUNTRIES);
-		countryComboBox.getSelectionModel().select("United States of America");
-		countryComboBox.selectionModelProperty().addListener((obs, ov, nv) -> {
-			if (!nv.equals("United States of America")) {
-				stateComboBox.getSelectionModel().select(-1);
-				stateComboBox.setDisable(true);
-			} else {
-				stateComboBox.setDisable(false);
-				stateComboBox.getSelectionModel().select(0);
-			}
-		});
+    /**
+     * Initializes the controller class.
+     */
+    public void initialize(URL url, ResourceBundle rb) {
+        // Hide the progress indicator on load
+        progressIndicator.setVisible(false);
 
-		// Date and time picker default values to current date and time
-		auctionDatePicker.setValue(LocalDate.now());
+        // Assign combo box values
+        auctionTypeComboBox.getItems().setAll(AUCTION_TYPES);
+        auctionTypeComboBox.getSelectionModel().select(0);
+        stateComboBox.getItems().setAll(STATES);
+        countryComboBox.getItems().setAll(COUNTRIES);
+        countryComboBox.getSelectionModel().select("United States of America");
+        countryComboBox.selectionModelProperty().addListener((obs, ov, nv) -> {
+            if (!nv.equals("United States of America")) {
+                stateComboBox.getSelectionModel().select(-1);
+                stateComboBox.setDisable(true);
+            } else {
+                stateComboBox.setDisable(false);
+                stateComboBox.getSelectionModel().select(0);
+            }
+        });
 
-		// Table controllers
-		auctionItemsTableViewController = new AuctionItemsTableViewController();
-		attendeesTableController = new AttendeesTableController();
+        // Date and time picker default values to current date and time
+        auctionDatePicker.setValue(LocalDate.now());
 
-		auctionItemsTableViewController.tableController(auctionItemsTableView);
-		attendeesTableController.tableController(auctionAttendeeTableView);
-	}
+        // Table controllers
+        auctionItemsTableViewController = new AuctionItemsTableViewController();
+        attendeesTableController = new AttendeesTableController();
 
-	public void refreshBidderTable(String auctionId) {
-		progressIndicator.setVisible(true);
-		progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-		ExecutorService executor = Executors.newCachedThreadPool();
-		executor.submit(() -> {
-			ObservableList<Attendees> attendeesList = new Auction().getAttendees(auctionId);
-			Platform.runLater(() -> {
-				auctionAttendeeTableView.getItems().setAll(attendeesList);
-				progressIndicator.setVisible(false);
-				progressIndicator.setProgress(0.0);
-			});
-			executor.shutdown();
-		});
-	}
+        auctionItemsTableViewController.tableController(auctionItemsTableView);
+        attendeesTableController.tableController(auctionAttendeeTableView);
+    }
 
-	public void refreshItemsTable(String auctionId) {
-		progressIndicator.setVisible(true);
-		progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-		ExecutorService executor = Executors.newCachedThreadPool();
-		executor.submit(() -> {
-			ObservableList<AuctionItem> auctionItems = new Auction().getAuctionItems(auctionId);
-			Platform.runLater(() -> {
-				auctionItemsTableView.getItems().setAll(auctionItems);
-				progressIndicator.setVisible(false);
-				progressIndicator.setProgress(0.0);
-			});
-			executor.shutdown();
-		});
-	}
+    public void refreshBidderTable(String auctionId) {
+        progressIndicator.setVisible(true);
+        progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(() -> {
+            ObservableList<Attendees> attendeesList = new Auction().getAttendees(auctionId);
+            Platform.runLater(() -> {
+                auctionAttendeeTableView.getItems().setAll(attendeesList);
+                progressIndicator.setVisible(false);
+                progressIndicator.setProgress(0.0);
+            });
+            executor.shutdown();
+        });
+    }
 
-	/**
-	 * Use threading to either save a new auction or update and existing auction.
-	 */
-	private void saveAuction() {
-		progressIndicator.setVisible(true);
-		ExecutorService executor = Executors.newCachedThreadPool();
-		executor.submit(() -> {
-			if (id == null) {
-				id = new Auction().saveNewAuction(this);
-				isNew = false;
-				if (id != null) {
-					Platform.runLater(() -> {
-						Notifications.create().text("Auction ID: " + auctionId + "\nStatus: Created").showInformation();
-						auctionIdTextField.setText(id);
-						progressIndicator.setProgress(0);
-						progressIndicator.setVisible(false);
-					});
-				}
-			} else {
-				boolean updated = new Auction().saveExistingAuction(this);
-				if (updated) {
-					Platform.runLater(() -> {
-						Notifications.create().text("Auction ID: " + auctionId + "\nStatus: Updated").showInformation();
-						progressIndicator.setVisible(false);
-						progressIndicator.setProgress(0);
-					});
-				}
-			}
-			executor.shutdown();
-		});
-	}
+    public void refreshItemsTable(String auctionId) {
+        progressIndicator.setVisible(true);
+        progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(() -> {
+            ObservableList<AuctionItem> auctionItems = new Auction().getAuctionItems(auctionId);
+            Platform.runLater(() -> {
+                auctionItemsTableView.getItems().setAll(auctionItems);
+                progressIndicator.setVisible(false);
+                progressIndicator.setProgress(0.0);
+            });
+            executor.shutdown();
+        });
+    }
 
-	@FXML
-	protected void saveAuctionAction(ActionEvent event) {
-		if (validateValues()) {
-			saveAuction();
-		} else {
+    /**
+     * Use threading to either save a new auction or update and existing
+     * auction.
+     */
+    private void saveAuction() {
+        progressIndicator.setVisible(true);
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(() -> {
+            if (id == null) {
+                id = new Auction().saveNewAuction(this);
+                isNew = false;
+                if (id != null) {
+                    Platform.runLater(() -> {
+                        Notifications.create().text("Auction ID: " + auctionId + "\nStatus: Created").showInformation();
+                        auctionIdTextField.setText(id);
+                        progressIndicator.setProgress(0);
+                        progressIndicator.setVisible(false);
+                    });
+                }
+            } else {
+                boolean updated = new Auction().saveExistingAuction(this);
+                if (updated) {
+                    Platform.runLater(() -> {
+                        Notifications.create().text("Auction ID: " + auctionId + "\nStatus: Updated").showInformation();
+                        progressIndicator.setVisible(false);
+                        progressIndicator.setProgress(0);
+                    });
+                }
+            }
+            executor.shutdown();
+        });
+    }
 
-		}
-	}
+    @FXML
+    protected void saveAuctionAction(ActionEvent event) {
+        if (validateValues()) {
+            saveAuction();
+        } else {
 
-	private boolean validateValues() {
-		missingItems = new ArrayList<>();
-		assignValues();
+        }
+    }
 
-		if (title == null || title.trim().isEmpty()) {
-			missingItems.add("Auction Title");
-		}
+    private boolean validateValues() {
+        missingItems = new ArrayList<>();
+        assignValues();
 
-		return missingItems.isEmpty();
-	}
+        if (title == null || title.trim().isEmpty()) {
+            missingItems.add("Auction Title");
+        }
+
+        return missingItems.isEmpty();
+    }
 
 }

@@ -30,3 +30,40 @@ Label{
     font-size: 14px;
     font-weight: bold;
 }
+
+/* Main window styles */
+.main-window{
+    -fx-background-color:#ffffff;
+}
+
+.navigation-window{
+    -fx-background-color: #ffffff;
+}
+
+.menu-collapse-button{
+    -fx-cursor: hand;
+}
+
+.navigation-window__section-heading{
+    -fx-font-size:18px;
+}
+
+.navigation-window__button{
+    -fx-font-size:16px;
+}
+
+.navigation-window__button.active{
+   -fx-text-fill:#ffffff;
+   -fx-background-color: #4e4e4e;
+}
+
+.navigation-window__button.active FontAwesomeIconView{
+   -fx-fill:#ffffff;
+}
+
+/* Loader Pane */
+ProgressIndicator{
+    -fx-background-color:rgba(0,0,0,0.75);
+    -fx-progress-color:#ffffff;
+    -fx-background-radius: 5;
+}

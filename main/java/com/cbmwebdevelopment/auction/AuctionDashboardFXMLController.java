@@ -22,11 +22,14 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 
 /**
  * FXML Controller class
@@ -35,86 +38,113 @@ import javafx.stage.Stage;
  */
 public class AuctionDashboardFXMLController implements Initializable {
 
-	@FXML
-	PrefixSelectionComboBox<String> filterAuctionTableComboBox;
+    @FXML
+    PrefixSelectionComboBox<String> filterAuctionTableComboBox;
 
-	@FXML
-	TableView<Auctions> auctionTableView;
+    @FXML
+    TableView<Auctions> auctionTableView;
 
-	@FXML
-	ProgressIndicator progressIndicator;
+    @FXML
+    ProgressIndicator progressIndicator;
 
-	AuctionsTableViewController tableController;
+    @FXML
+    Button forwardButton, backButton;
 
-	@FXML
-	protected void createNewAuctionAction(ActionEvent event) throws IOException{
-		AuctionMain auctionMain = new AuctionMain();
-		auctionMain.auctionId = null;
-		auctionMain.start(new Stage());
-	}
+    @FXML
+    StackPane stackPane;
 
-	private void getAuctions(String filterBy){
-		auctionTableView.setDisable(true);
-		progressIndicator.setVisible(true);
-		ExecutorService executor = Executors.newCachedThreadPool();
-		executor.submit(()->{
-			ObservableList<Auctions> data = new Auction().getAuctions(filterBy);
-			Platform.runLater(()->{
-				auctionTableView.setItems(data);
-				auctionTableView.setDisable(false);
-				progressIndicator.setVisible(false);
-			});
-			executor.shutdown();
-		});
-	}
+    @FXML
+    AnchorPane auctionsPane;
 
-	/**
-	 * Initializes the controller class.
-	 */
-	@Override
-	public void initialize(URL url, ResourceBundle rb) {
-		// Hide the progress indicator on load
-		progressIndicator.setVisible(false);
+    AuctionsTableViewController tableController;
+    AuctionFXMLController auctionController;
 
-		// Set the table controller
-		tableController = new AuctionsTableViewController();
-		tableController.tableView(auctionTableView);
-		getAuctions("-");
+    @FXML
+    protected void createNewAuctionAction(ActionEvent event) throws IOException {
+        System.out.println("Create new auction");
+        System.out.println(stackPane.getChildren().get(1));
+        stackPane.getChildren().get(0).toBack();
+        stackPane.getChildren().get(1).setVisible(true);
+    }
 
-		// Set the filter by combo box
-		filterAuctionTableComboBox.setItems(AUCTION_FILTERS);
-		filterAuctionTableComboBox.getSelectionModel().select(0);
-		filterAuctionTableComboBox.valueProperty().addListener((obs, ov, nv)->{
-			if(nv != null && (!nv.toString().isEmpty())){
-				getAuctions(nv.toString());
-			}
-		});
+    private void getAuctions(String filterBy) {
+        auctionTableView.setDisable(true);
+        progressIndicator.setVisible(true);
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(() -> {
+            ObservableList<Auctions> data = new Auction().getAuctions(filterBy);
+            Platform.runLater(() -> {
+                auctionTableView.setItems(data);
+                auctionTableView.setDisable(false);
+                progressIndicator.setVisible(false);
+            });
+            executor.shutdown();
+        });
+    }
 
-		// click listener on table controller
-		auctionTableView.setRowFactory(tv -> {
-			TableRow<Auctions> row = new TableRow<>();
-			row.setOnMouseClicked(event -> {
-				if(event.getClickCount() == 2 && (!row.isEmpty())) {
-					Auctions auctions = row.getItem();
-					AuctionMain auctionMain = new AuctionMain();
-					auctionMain.auctionId = auctions.getId().toString();
-					try {
-						auctionMain.start(new Stage());
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-			return row;
-		});
-	}
+    @FXML
+    protected void viewExistingAuctionAction(ActionEvent event) throws IOException {
+        String id = auctionTableView.getSelectionModel().getSelectedItem().getId().toString();
+        auctionController.getAuction(id);
+        stackPane.getChildren().get(1);
+    }
 
-	@FXML
-	protected void viewExistingAuctionAction(ActionEvent event) throws IOException{
-		AuctionMain auctionMain = new AuctionMain();
-		auctionMain.auctionId = auctionTableView.getSelectionModel().getSelectedItem().getId().toString();
-		auctionMain.start(new Stage());
-	}
+    private void initViews() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionFXML.fxml"));
+            AnchorPane auctionPane = loader.load();
+            auctionController = (AuctionFXMLController) loader.getController();
+
+            stackPane.getChildren().setAll(auctionsPane, auctionPane);
+            stackPane.getChildren().get(0).toFront();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        // Set the table controller
+        tableController = new AuctionsTableViewController();
+        tableController.tableView(auctionTableView);
+        getAuctions("-");
+
+        // Set the filter by combo box
+        filterAuctionTableComboBox.setItems(AUCTION_FILTERS);
+        filterAuctionTableComboBox.getSelectionModel().select(0);
+        
+    }
+
+    private void setListeners(){
+        filterAuctionTableComboBox.valueProperty().addListener((obs, ov, nv) -> {
+            if (nv != null && (!nv.toString().isEmpty())) {
+                getAuctions(nv.toString());
+            }
+        });
+
+        // click listener on table controller
+        auctionTableView.setRowFactory(tv -> {
+            TableRow<Auctions> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Auctions auctions = row.getItem();
+                    String id = String.valueOf(auctions.getId());
+                    auctionController.getAuction(id);
+                    System.out.println("get auction");
+                    System.out.println(stackPane.getChildren().get(1));
+                    stackPane.getChildren().get(1);
+                }
+            });
+            return row;
+        });
+    }
+    
+    /**
+     * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        initViews();
+    }
 
 }
