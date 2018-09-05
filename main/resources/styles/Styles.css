@@ -30,3 +30,65 @@ Label{
     font-size: 14px;
     font-weight: bold;
 }
+
+/* Main window styles */
+.main-window{
+    -fx-background-color:#ffffff;
+}
+
+.navigation-window{
+    -fx-background-color: #ffffff;
+}
+
+.menu-collapse-button{
+    -fx-cursor: hand;
+}
+
+.navigation-window__section-heading{
+    -fx-font-size:18px;
+}
+
+.navigation-window__button{
+    -fx-font-size:16px;
+}
+
+.navigation-window__button:hover{
+    -fx-background-color:#dddddd;
+    -fx-text-fill: #ffffff;
+    -fx-scale-x:1.0;
+    -fx-scale-y:1.0;
+}
+
+.navigation-window__button:hover FontAwesomeIconView{
+   -fx-fill:#ffffff;
+}
+.navigation-window__button.active{
+   -fx-text-fill:#ffffff;
+   -fx-background-color: #4e4e4e;
+}
+
+.navigation-window__button.active FontAwesomeIconView{
+   -fx-fill:#ffffff;
+   -fx-size: 32;
+}
+
+/* Loader Pane */
+ProgressIndicator{
+    -fx-background-color:rgba(0,0,0,0.75);
+    -fx-progress-color:#ffffff;
+    -fx-background-radius: 5;
+}
+
+/* Buttons */
+.fab{
+    -fx-pref-width: 50px;
+    -fx-background-radius:50px;
+    -fx-background-color:#03a6f2;
+    -fx-pref-height: 50px;
+    -fx-border-radius:50px;
+}
+
+.fab>FontAwesomeIconView{
+    -fx-fill:#ffffff;
+   -fx-size: 32;
+}

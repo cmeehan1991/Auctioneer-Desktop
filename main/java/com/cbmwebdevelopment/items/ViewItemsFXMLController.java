@@ -12,10 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.cbmwebdevelopment.auction.Auction;
-import com.cbmwebdevelopment.auction.AuctionFXMLController;
+import com.cbmwebdevelopment.auction.AuctionController;
 import com.cbmwebdevelopment.tablecontrollers.ItemsTableController;
 import com.cbmwebdevelopment.tablecontrollers.ItemsTableController.AllItems;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -29,7 +28,6 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -38,44 +36,45 @@ import javafx.stage.Stage;
  */
 public class ViewItemsFXMLController implements Initializable {
 
-	@FXML
-	Button addItemToAuctionButton;
-	
-	@FXML
-	Separator addItemSeparator;
-	
+    @FXML
+    Button addItemToAuctionButton;
+
+    @FXML
+    Separator addItemSeparator;
+
     @FXML
     TextField searchTextField;
 
     @FXML
     TableView<AllItems> itemsTableView;
 
-    protected FXInternalWindow internalWindow;
-    public AuctionFXMLController auctionController;
-    private ItemsTableController tableController;
+    public String auctionId;
+    
+    public AuctionController auctionController;
+    public ItemsTableController tableController;
 
     @FXML
     protected void addItemToAuctionAction(ActionEvent event) {
-    		// Add the item to the auction
-    		ObservableList<AllItems> selectedItems = itemsTableView.getSelectionModel().getSelectedItems();
-    		selectedItems.forEach(item->{
-    			Auction auction = new Auction();
-    			auction.addItem(String.valueOf(AuctionFXMLController.auctionId), String.valueOf(item.getId()));
-    		});
-    		
-    		// Reset the auction items table
-    		auctionController.refreshItemsTable(String.valueOf(AuctionFXMLController.auctionId));
-    		
-    		// Close the window
-    		internalWindow.close();
+        // Add the item to the auction
+        ObservableList<AllItems> selectedItems = itemsTableView.getSelectionModel().getSelectedItems();
+        selectedItems.forEach(item -> {
+            Auction auction = new Auction();
+            auction.addItem(auctionId, String.valueOf(item.getId()));
+        });
+
+        // Reset the auction items table
+        auctionController.refreshItemsTable(auctionId);
+
+        // Close the window
+       // internalWindow.close();
     }
-    
+
     @FXML
     protected void addNewItemAction(ActionEvent event) throws IOException {
-        ItemMain itemMain = new ItemMain();
-        itemMain.isNew = true;
-        itemMain.itemsController = this;
-        itemMain.start(new Stage());
+        //ItemMain itemMain = new ItemMain();
+        //itemMain.isNew = true;
+        //itemMain.itemsController = this;
+        //itemMain.start(new Stage());
     }
 
     @FXML
@@ -85,13 +84,11 @@ public class ViewItemsFXMLController implements Initializable {
             // Remove the item from the database
             Item item = new Item();
             item.removeItem(selectedItem.getId());
-            
+
             // Remove the item from the table
             itemsTableView.getItems().remove(selectedItem);
         });
     }
-    
-    
 
     /**
      * Initializes the controller class.
@@ -109,35 +106,35 @@ public class ViewItemsFXMLController implements Initializable {
         searchTextField.textProperty().addListener((obs, ov, nv) -> {
             if (nv.trim().isEmpty()) {
                 populateTable(null);
-            }else {
-            		populateTable(nv.toString());
+            } else {
+                populateTable(nv.toString());
             }
         });
-        
+
         // Handle a double click on an item in the items table. 
-        itemsTableView.setRowFactory(tv->{
-        		TableRow<AllItems> row = new TableRow<>();
-        		row.setOnMouseClicked(evt ->{
-        			if(evt.getClickCount() == 2 && (!row.isEmpty())) {
-        				AllItems item = row.getItem();
-        				viewSelectedItems(String.valueOf(item.getId()));
-        			}
-        		});
-        		return row;
+        itemsTableView.setRowFactory(tv -> {
+            TableRow<AllItems> row = new TableRow<>();
+            row.setOnMouseClicked(evt -> {
+                if (evt.getClickCount() == 2 && (!row.isEmpty())) {
+                    AllItems item = row.getItem();
+                    viewSelectedItems(String.valueOf(item.getId()));
+                }
+            });
+            return row;
         });
     }
 
     protected void populateTable(String terms) {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         executor.submit(() -> {
-        		ObservableList<AllItems> data = new Item().getAuctionItems(terms, null);
+            ObservableList<AllItems> data = new Item().getAuctionItems(terms, null);
             Platform.runLater(() -> {
                 itemsTableView.getItems().setAll(data);
             });
             executor.shutdown();
         });
     }
-    
+
     @FXML
     protected void searchForItemAction(ActionEvent event) {
         String terms = searchTextField.getText();
@@ -151,20 +148,21 @@ public class ViewItemsFXMLController implements Initializable {
             alert.showAndWait();
         }
     }
-    
+
     /**
      * Opens the item view
+     *
      * @param id
      */
     private void viewSelectedItems(String id) {
-    		try {
-	    		ItemMain itemMain = new ItemMain();
-	    		itemMain.itemNumber = id;
-	    		itemMain.isNew = false;
-	    		itemMain.start(new Stage());
-    		}catch(IOException ex) {
-	    		System.err.println(ex.getMessage());
-	    	}
+       // try {
+           // ItemMain itemMain = new ItemMain();
+           // itemMain.itemNumber = id;
+           // itemMain.isNew = false;
+           // itemMain.start(new Stage());
+        //} catch (IOException ex) {
+//            System.err.println(ex.getMessage());
+       // }
     }
 
     @FXML
@@ -172,7 +170,7 @@ public class ViewItemsFXMLController implements Initializable {
         System.out.println("View Selected");
         ObservableList<AllItems> selectedItems = itemsTableView.getSelectionModel().getSelectedItems();
         selectedItems.forEach(item -> {
-        		viewSelectedItems(String.valueOf(item.getId()));
+            viewSelectedItems(String.valueOf(item.getId()));
         });
     }
 

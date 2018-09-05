@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import org.controlsfx.control.PrefixSelectionComboBox?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.auction.AuctionController">
+   <children>
+      <JFXTabPane fx:id="auctionTabPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab closable="false" text="Dashboard">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <PrefixSelectionComboBox fx:id="filterAuctionTableComboBox" prefHeight="27.0" prefWidth="143.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0" />
+                        <TableView fx:id="auctionTableView" prefHeight="421.0" prefWidth="866.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="41.0" />
+                        <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="60.0" text="Filter By:" AnchorPane.rightAnchor="163.0" AnchorPane.topAnchor="15.0" />
+                        <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#addNewAuction" styleClass="fab" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="PLUS" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab closable="false" disable="true" text="Auction">
+               <content>
+                  <AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="736.0" styleClass="mainFxmlClass">
+                     <stylesheets>
+                        <URL value="@/styles/Styles.css" />
+                     </stylesheets>
+                     <children>
+                        <Label layoutX="8.0" layoutY="15.0" text="Auction No." AnchorPane.topAnchor="15.0" />
+                        <TextField fx:id="auctionIdTextField" editable="false" layoutX="91.0" layoutY="45.0" prefHeight="27.0" prefWidth="62.0" AnchorPane.topAnchor="10.0" />
+                        <GridPane hgap="5.0" prefHeight="151.0" prefWidth="736.0" vgap="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="40.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="152.0" minWidth="100.0" prefWidth="133.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="486.0" minWidth="46.0" prefWidth="165.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="463.0" minWidth="59.0" prefWidth="142.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="463.0" minWidth="27.0" prefWidth="59.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="463.0" minWidth="100.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="463.0" minWidth="100.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField fx:id="auctionTitleTextField" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                              <TextArea fx:id="auctionDescriptionTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.rowSpan="3" />
+                              <CheckBox fx:id="publicCheckBox" mnemonicParsing="false" text="Public" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                              <DatePicker fx:id="auctionDatePicker" prefHeight="27.0" prefWidth="305.0" showWeekNumbers="true" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+                              <TextField fx:id="buildingNameTextField" GridPane.columnIndex="2" GridPane.columnSpan="4" GridPane.rowIndex="1" />
+                              <TextField fx:id="primaryAddressTextField" GridPane.columnIndex="2" GridPane.columnSpan="4" GridPane.rowIndex="3" />
+                              <TextField fx:id="secondaryAddressTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                              <Label text="City" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                              <TextField fx:id="cityTextField" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+                              <Label text="State/Provence" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                              <Label text="Country" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                              <Label text="Postal Code" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                              <TextField fx:id="postalCodeTextField" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <PrefixSelectionComboBox fx:id="stateComboBox" prefHeight="27.0" prefWidth="195.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+                              <PrefixSelectionComboBox fx:id="countryComboBox" prefHeight="27.0" prefWidth="179.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+                              <Label text="Title" />
+                              <Label text="Description" GridPane.rowIndex="2" />
+                              <Label text="Building Name" GridPane.columnIndex="2" />
+                              <Label text="Primary Address" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Label text="Type" GridPane.rowIndex="6" />
+                              <Label text="Date &amp; Time" GridPane.rowIndex="8" />
+                              <Label text="Apt./Suite/Bld No." GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                              <PrefixSelectionComboBox fx:id="auctionTypeComboBox" prefHeight="27.0" prefWidth="131.0" GridPane.rowIndex="7" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </GridPane>
+                        <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" graphicTextGap="8.0" layoutX="19.0" layoutY="430.0" onAction="#saveChangesAction" prefHeight="29.0" prefWidth="69.0" ripplerFill="#03a6f2" styleClass="fab" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="430.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="SAVE" size="18" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" disable="true" text="Items">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="auctionItemsTableView" prefHeight="394.0" prefWidth="736.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#addAuctionItemAction" styleClass="fab" text="Add Item" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="PLUS" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" disable="true" text="Attendees">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" stylesheets="@../styles/Styles.css">
+                     <children>
+                        <TableView fx:id="auctionAttendeeTableView" layoutX="14.0" layoutY="46.0" prefHeight="337.0" prefWidth="736.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                           <columns>
+                              <TableColumn prefWidth="75.0" text="Bidder ID" />
+                              <TableColumn prefWidth="580.0" text="First &amp; Last Name" />
+                              <TableColumn prefWidth="79.0" text="Remove" />
+                           </columns>
+                        </TableView>
+                        <TextField layoutX="14.0" layoutY="14.0" prefHeight="27.0" prefWidth="640.0" promptText="Search..." AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="14.0" />
+                        <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#addAttendeeAction" styleClass="fab" text="Add Item" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="PLUS" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </JFXTabPane>
+      <ProgressIndicator fx:id="progressIndicator" layoutX="600.0" layoutY="400.0" prefHeight="67.0" prefWidth="69.0" progress="0.0" />
+   </children>
+</AnchorPane>

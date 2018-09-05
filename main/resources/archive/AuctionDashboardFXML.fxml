@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.controlsfx.control.PrefixSelectionComboBox?>
+
+<AnchorPane prefHeight="501.0" prefWidth="894.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.auction.AuctionDashboardFXMLController">
+   <children>
+      <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <Button fx:id="backButton" contentDisplay="GRAPHIC_ONLY" disable="true" mnemonicParsing="false" onAction="#backButtonPressedAction" text="Button">
+               <graphic>
+                  <FontAwesomeIconView glyphName="UNDO" />
+               </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+            <Button mnemonicParsing="false" onAction="#createNewAuctionAction" text="New Auction" />
+            <Button mnemonicParsing="false" onAction="#viewExistingAuctionAction" text="View Auction" />
+        </items>
+      </ToolBar>
+      
+      <StackPane fx:id="stackPane" layoutX="14.0" layoutY="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+         <children>
+            <AnchorPane fx:id="auctionsPane" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <PrefixSelectionComboBox fx:id="filterAuctionTableComboBox" layoutX="731.0" layoutY="10.0" prefHeight="27.0" prefWidth="143.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0" />
+                  <TableView fx:id="auctionTableView" layoutX="14.0" layoutY="41.0" prefHeight="421.0" prefWidth="866.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="41.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="671.0" layoutY="15.0" prefHeight="17.0" prefWidth="60.0" text="Filter By:" AnchorPane.rightAnchor="163.0" AnchorPane.topAnchor="15.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </StackPane>
+      <ProgressIndicator fx:id="progressIndicator" layoutX="415.0" layoutY="225.0" prefHeight="67.0" prefWidth="69.0" />
+   </children>
+</AnchorPane>

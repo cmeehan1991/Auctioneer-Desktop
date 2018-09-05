@@ -134,7 +134,7 @@ public class Bidder {
      * @param terms
      * @return 
      */
-    protected ObservableList<Bidders> getBidders(String terms) {
+    public ObservableList<Bidders> getBidders(String terms) {
         ObservableList<Bidders> data = FXCollections.observableArrayList();
         Connection conn = new DBConnection().connect();
         String sql = "SELECT ID, CONCAT(FIRST_NAME, ' ', LAST_NAME) AS 'NAME', CITY, STATE FROM BIDDERS";

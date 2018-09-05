@@ -12,16 +12,14 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 import org.controlsfx.control.NotificationPane;
 import javafx.application.Platform;
 
 import com.cbmwebdevelopment.alerts.Alerts;
 import com.cbmwebdevelopment.auction.Auction;
-import com.cbmwebdevelopment.auction.AuctionFXMLController;
+import com.cbmwebdevelopment.auction.AuctionController;
 import com.cbmwebdevelopment.tablecontrollers.BiddersTableController;
 import com.cbmwebdevelopment.tablecontrollers.BiddersTableController.Bidders;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -54,43 +52,12 @@ public class BidderListFXMLController implements Initializable {
 
     @FXML
     Button addSelectedBidderButton;
-    
-    protected FXInternalWindow internalWindow;
+
+    public AuctionController auctionController;
     private BiddersTableController btc;
-    
-    protected AuctionFXMLController auctionController;
-    protected String auctionId;
+    public String auctionId;
     private ArrayList<String> bidders;
 
-    @FXML
-    protected void addSelectedBidderAction(ActionEvent event) {
-    		ObservableList<Bidders> selectedBidders = biddersTableView.getSelectionModel().getSelectedItems();
-    		if(selectedBidders != null) {
-    			Auction auction = new Auction();
-    			bidders = new ArrayList<>();
-	    		selectedBidders.forEach(bidder -> {
-	    			boolean bidderExists = new Auction().checkForBidder(auctionId, String.valueOf(bidder.getId()));
-	    			if(!bidderExists) {
-	    				auction.addAttendee(Integer.parseInt(auctionId), bidder.getId());
-	    			}else {
-	    				bidders.add(String.valueOf(bidder.getId()) + " - " +bidder.getName());
-	    			}
-	    		});
-	    		if(!bidders.isEmpty()) {
-	    			Alert alert = new Alerts().errorAlert("Auction Bidders Exist", "Selected Bidders Associated With Auction", "The following bidders will not be added to the auction because they have already been assigned to the auction:", bidders);
-	    			alert.showAndWait();
-	    		}
-	    		auctionController.refreshBidderTable(auctionId);
-	    		internalWindow.close();
-    		}else {
-    			Alert alert = new Alert(AlertType.WARNING);
-    			alert.setTitle("Auction Bidders");
-    			alert.setHeaderText("No bidders selected");
-    			alert.setContentText("You must select at least one bidder to add to the auction.");
-    			alert.showAndWait();
-    		}
-    }
-    
     private void getBidders(String terms) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
@@ -104,45 +71,33 @@ public class BidderListFXMLController implements Initializable {
         });
     }
 
-    /**
-     * Initializes the controller class.
-     *
-     * @param url
-     * @param rb
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-    		addSelectedBidderButton.setVisible(false);
-        
-    		btc = new BiddersTableController();
-        btc.biddersTable(biddersTableView);
-        // Get all of the bidders
-        getBidders(null);
-
-        // Listen for the text to change on the search input
-        searchInput.textProperty().addListener((obs, ov, nv) -> {
-            if (nv == null || nv.trim().isEmpty()) {
-                getBidders(null);
-            }
-        });
-
-        // Set click listener for table
-        biddersTableView.setRowFactory(tv -> {
-            TableRow<Bidders> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    BidderMain bidderMain = new BidderMain();
-                    bidderMain.isNew = false;
-                    bidderMain.bidderId = String.valueOf(row.getItem().getId());
-                    try {
-                        bidderMain.start(new Stage());
-                    } catch (IOException ex) {
-                        System.err.println(ex.getMessage());
-                    }
+    @FXML
+    protected void addSelectedBidderAction(ActionEvent event) {
+        ObservableList<Bidders> selectedBidders = biddersTableView.getSelectionModel().getSelectedItems();
+        if (selectedBidders != null) {
+            Auction auction = new Auction();
+            bidders = new ArrayList<>();
+            selectedBidders.forEach(bidder -> {
+                boolean bidderExists = new Auction().checkForBidder(auctionId, String.valueOf(bidder.getId()));
+                if (!bidderExists) {
+                    auction.addAttendee(Integer.parseInt(auctionId), bidder.getId());
+                } else {
+                    bidders.add(String.valueOf(bidder.getId()) + " - " + bidder.getName());
                 }
             });
-            return row;
-        });
+            if (!bidders.isEmpty()) {
+                Alert alert = new Alerts().errorAlert("Auction Bidders Exist", "Selected Bidders Associated With Auction", "The following bidders will not be added to the auction because they have already been assigned to the auction:", bidders);
+                alert.showAndWait();
+            }
+            auctionController.refreshBidderTable(auctionId);
+
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Auction Bidders");
+            alert.setHeaderText("No bidders selected");
+            alert.setContentText("You must select at least one bidder to add to the auction.");
+            alert.showAndWait();
+        }
     }
 
     @FXML
@@ -172,5 +127,63 @@ public class BidderListFXMLController implements Initializable {
             }
         });
     }
+    
+    /**
+     * Initialize the views, set table controllers, etc.
+     */
+    private void initViews() {
+        if (auctionId != null) {
+            addSelectedBidderButton.setVisible(true);
+        } else {
+            addSelectedBidderButton.setVisible(false);
+        }
 
+        btc = new BiddersTableController();
+        btc.biddersTable(biddersTableView);
+        // Get all of the bidders
+        getBidders(null);
+
+    }
+
+    /**
+     * Set any action listeners
+     */
+    private void setListeners() {
+        // Listen for the text to change on the search input
+        searchInput.textProperty().addListener((obs, ov, nv) -> {
+            if (nv == null || nv.trim().isEmpty()) {
+                getBidders(null);
+            }
+        });
+
+        // Set click listener for table
+        biddersTableView.setRowFactory(tv -> {
+            TableRow<Bidders> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    BidderMain bidderMain = new BidderMain();
+                    bidderMain.isNew = false;
+                    bidderMain.bidderId = String.valueOf(row.getItem().getId());
+                    try {
+                        bidderMain.start(new Stage());
+                    } catch (IOException ex) {
+                        System.err.println(ex.getMessage());
+                    }
+                }
+            });
+            return row;
+        });
+    }
+
+    /**
+     * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        initViews();
+        setListeners();
+    }
 }

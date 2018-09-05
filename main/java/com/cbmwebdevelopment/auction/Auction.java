@@ -382,6 +382,7 @@ public class Auction {
             ps.setInt(1, bidderId);
             ps.setInt(2, auctionId);
             int rs = ps.executeUpdate();
+            System.out.println(ps);
             if (rs > 0) {
                 removed = true;
             }
@@ -391,7 +392,7 @@ public class Auction {
             alert.setTitle("Error");
             alert.setContentText("Error removing user from database." + "\n" + "Error Message: " + ex.getMessage());
             alert.showAndWait();
-            System.err.println(ex.getMessage());
+            System.err.println("Message: " + ex.getMessage());
         }
 
         return removed;
@@ -400,41 +401,54 @@ public class Auction {
     /**
      * Updates an existing auction event.
      *
-     * @param controller
+     * @param id
+     * @param title
+     * @param description
+     * @param postalCode
+     * @param secondaryAddress
+     * @param primaryAddress
+     * @param buildingName
+     * @param country
+     * @param isPublic
+     * @param state
+     * @param city
+     * @param type
+     * @param dateTime
+     * @return
      */
-    public boolean saveExistingAuction(AuctionFXMLController controller) {
+    public boolean saveExistingAuction(String id, String title, String description, String primaryAddress, String secondaryAddress, String city, String state, String postalCode, String country, String buildingName, boolean isPublic, String type, String dateTime) {
+        System.out.println("Save existing auction");
         boolean updated = false;
-        Connection conn = new DBConnection().connect();
         String sql = "UPDATE AUCTIONS SET NAME = ?, DESCRIPTION = ?, TYPE = ?, PRIMARY_ADDRESS = ?, SECONDARY_ADDRESS = ?, CITY = ?, STATE = ?, POSTAL_CODE = ?, COUNTRY = ?, BUILDING_NAME = ?, PUBLIC = ?, TYPE = ?, AUCTION_DATE = ? WHERE ID = ?";
+        System.out.println(sql);
         try {
+            Connection conn = new DBConnection().connect();
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, controller.title);
-            ps.setString(2, controller.description);
-            ps.setString(3, controller.type);
-            ps.setString(4, controller.primaryAddress);
-            ps.setString(5, controller.secondaryAddress);
-            ps.setString(6, controller.city);
-            ps.setString(7, controller.state);
-            ps.setString(8, controller.postalCode);
-            ps.setString(9, controller.country);
-            ps.setString(10, controller.buildingName);
-            ps.setBoolean(11, controller.isPublic);
-            ps.setString(12, controller.type);
-            ps.setString(13, controller.dateTime);
-            ps.setString(14, controller.id);
+            ps.setString(1, title);
+            ps.setString(2, description);
+            ps.setString(3, type);
+            ps.setString(4, primaryAddress);
+            ps.setString(5, secondaryAddress);
+            ps.setString(6, city);
+            ps.setString(7, state);
+            ps.setString(8, postalCode);
+            ps.setString(9, country);
+            ps.setString(10, buildingName);
+            ps.setBoolean(11, isPublic);
+            ps.setString(12, type);
+            ps.setString(13, dateTime);
+            ps.setString(14, id);
+            System.out.println(ps);
             int rs = ps.executeUpdate();
+            System.out.println(rs);
             if (rs > 0) {
                 updated = true;
             }
+            conn.close();
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
+        System.out.println(updated);
         return updated;
     }
 
@@ -442,28 +456,39 @@ public class Auction {
      * Create a new auction event. Returns a string value of the unique auction
      * ID.
      *
-     * @param controller
+     * @param title
+     * @param description
+     * @param primaryAddress
+     * @param secondaryAddress
+     * @param city
+     * @param state
+     * @param country
+     * @param postalCode
+     * @param buildingName
+     * @param type
+     * @param isPublic
+     * @param dateTime
      * @return
      */
-    public String saveNewAuction(AuctionFXMLController controller) {
+    public String saveNewAuction(String title, String description, String primaryAddress, String secondaryAddress, String city, String state, String postalCode, String country, String buildingName, boolean isPublic, String type, String dateTime) {
         String auctionId = null;
         Connection conn = new DBConnection().connect();
         String sql = "INSERT INTO AUCTIONS (NAME, DESCRIPTION, ORGANIZATION_ID, PRIMARY_ADDRESS, SECONDARY_ADDRESS, CITY, STATE, POSTAL_CODE, COUNTRY, BUILDING_NAME, PUBLIC, TYPE, AUCTION_DATE) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, controller.title);
-            ps.setString(2, controller.description);
+            ps.setString(1, title);
+            ps.setString(2, description);
             ps.setString(3, Values.ORGANIZATION_ID);
-            ps.setString(4, controller.primaryAddress);
-            ps.setString(5, controller.secondaryAddress);
-            ps.setString(6, controller.city);
-            ps.setString(7, controller.state);
-            ps.setString(8, controller.postalCode);
-            ps.setString(9, controller.country);
-            ps.setString(10, controller.buildingName);
-            ps.setBoolean(11, controller.isPublic);
-            ps.setString(12, controller.type);
-            ps.setString(13, controller.dateTime);
+            ps.setString(4, primaryAddress);
+            ps.setString(5, secondaryAddress);
+            ps.setString(6, city);
+            ps.setString(7, state);
+            ps.setString(8, postalCode);
+            ps.setString(9, country);
+            ps.setString(10, buildingName);
+            ps.setBoolean(11, isPublic);
+            ps.setString(12, type);
+            ps.setString(13, dateTime);
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {

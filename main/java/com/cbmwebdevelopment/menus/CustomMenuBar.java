@@ -14,8 +14,6 @@ import com.cbmwebdevelopment.alerts.Alerts;
 import com.cbmwebdevelopment.auction.Auction;
 import com.cbmwebdevelopment.bidder.BidderListMain;
 import com.cbmwebdevelopment.bidder.BidderMain;
-import com.cbmwebdevelopment.items.ItemMain;
-import com.cbmwebdevelopment.items.ViewItemsMain;
 import com.cbmwebdevelopment.main.Values;
 import com.cbmwebdevelopment.output.BidderList;
 import com.cbmwebdevelopment.output.ItemList;
@@ -99,13 +97,13 @@ public class CustomMenuBar {
 
         // Create a new item
         args[0].setOnAction((event) -> {
-            ItemMain itemMain = new ItemMain();
+          /*  ItemMain itemMain = new ItemMain();
             itemMain.isNew = true;
             try {
                 itemMain.start(new Stage());
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
-            }
+            }*/
         });
 
         // Create a new bidder
@@ -142,12 +140,8 @@ public class CustomMenuBar {
 
         // View the items in the application
         args[5].setOnAction((event) -> {
-            ViewItemsMain main = new ViewItemsMain();
-            try {
-                main.start(new Stage());
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }
+//            ViewItemsMain main = new ViewItemsMain();
+//            main.start(new Stage());
         });
 
         // Export a list of the bidders

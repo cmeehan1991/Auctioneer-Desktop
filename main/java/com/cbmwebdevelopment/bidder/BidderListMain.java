@@ -36,13 +36,13 @@ public class BidderListMain extends Application {
 		BidderListFXMLController bidderListController = loader.getController();
 		
 		if(addAuctionBidder) {
-			bidderListController.auctionController = this.auctionController;
+			//bidderListController.auctionController = this.auctionController;
 			bidderListController.addSelectedBidderButton.setVisible(true);
 			bidderListController.auctionId = this.auctionId;
 		}
 		
 		FXInternalWindow internalWindow = new WindowController().newInternalWindow("Bidder List", anchorPane);
-		bidderListController.internalWindow = internalWindow;
+		//bidderListController.internalWindow = internalWindow;
 		desktopPane.getWindows().add(internalWindow);
 	}
 	
