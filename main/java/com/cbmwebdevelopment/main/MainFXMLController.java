@@ -1,5 +1,6 @@
 package com.cbmwebdevelopment.main;
 
+import com.cbmwebdevelopment.auction.AuctionController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,6 +17,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class MainFXMLController implements Initializable {
@@ -23,6 +25,9 @@ public class MainFXMLController implements Initializable {
     @FXML
     private BorderPane borderPane;
 
+    @FXML
+    private StackPane stackPane;
+    
     @FXML
     private VBox navigationItemsBox;
 
@@ -33,13 +38,19 @@ public class MainFXMLController implements Initializable {
     private MenuBar menuBar;
 
     @FXML
-    private ScrollPane scrollPane;
+    ScrollPane scrollPane;
 
+    public static ScrollPane mainScrollPane;
     @FXML
     protected void auctionDashboardAction(ActionEvent event) {
         setActiveItem(auctionDashboardButton);
         try {
-            AnchorPane anchorPane = new FXMLLoader().load(getClass().getResource("/fxml/AuctionDashboardFXML.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionsFXML.fxml"));
+            AnchorPane anchorPane = loader.load();
+            AuctionController controller = (AuctionController) loader.getController();
+            controller.scrollPane = scrollPane;
+            controller.stackPane = stackPane;
+            
             setScrollPane(anchorPane);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -73,6 +84,7 @@ public class MainFXMLController implements Initializable {
         setActiveItem(bidsListButton);
         try {
             AnchorPane anchorPane = new FXMLLoader().load(getClass().getResource("/fxml/ViewBidsFXML.fxml"));
+            
             setScrollPane(anchorPane);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -108,7 +120,7 @@ public class MainFXMLController implements Initializable {
             auctionDashboardButton.getStyleClass().add("active");
         }
         try {
-            AnchorPane auctionDashboard = new FXMLLoader().load(getClass().getResource("/fxml/AuctionDashboardFXML.fxml"));
+            AnchorPane auctionDashboard = new FXMLLoader().load(getClass().getResource("/fxml/AuctionsFXML.fxml"));
             setScrollPane(auctionDashboard);
 
         } catch (IOException ex) {
@@ -128,18 +140,25 @@ public class MainFXMLController implements Initializable {
 
         double nodeHeight = node.getHeight();
         double nodeWidth = node.getWidth();
+        
+        if (spWidth != 0) {
+            if (spWidth > nodeWidth) {
+                node.setPrefWidth(spWidth - 2);
+            }
 
-        if (spWidth > nodeWidth) {
-            node.setPrefWidth(spWidth);
-        }
-
-        if (spHeight > nodeHeight) {
-            node.setPrefHeight(spHeight);
+            if (spHeight > nodeHeight) {
+                node.setPrefHeight(spHeight - 2);
+            }
+        }else{
+            node.setPrefWidth(1050);
+            node.setPrefHeight(760);
         }
 
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(node);
+        
+        mainScrollPane = scrollPane;
     }
 
     @Override

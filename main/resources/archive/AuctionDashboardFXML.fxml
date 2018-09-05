@@ -13,23 +13,19 @@
 
 <AnchorPane prefHeight="501.0" prefWidth="894.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.auction.AuctionDashboardFXMLController">
    <children>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-            <Button fx:id="backButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+          <Button fx:id="backButton" contentDisplay="GRAPHIC_ONLY" disable="true" mnemonicParsing="false" onAction="#backButtonPressedAction" text="Button">
                <graphic>
                   <FontAwesomeIconView glyphName="UNDO" />
                </graphic>
             </Button>
-            <Button fx:id="forwardButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
-               <graphic>
-                  <FontAwesomeIconView glyphName="REPEAT" />
-               </graphic>
-            </Button>
-            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="6.0" />
-          <Button mnemonicParsing="false" onAction="#createNewAuctionAction" text="New Auction" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+            <Button mnemonicParsing="false" onAction="#createNewAuctionAction" text="New Auction" />
             <Button mnemonicParsing="false" onAction="#viewExistingAuctionAction" text="View Auction" />
         </items>
       </ToolBar>
+      
       <StackPane fx:id="stackPane" layoutX="14.0" layoutY="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
          <children>
             <AnchorPane fx:id="auctionsPane" prefHeight="200.0" prefWidth="200.0">

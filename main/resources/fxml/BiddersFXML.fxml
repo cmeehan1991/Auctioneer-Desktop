@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import de.jensd.fx.glyphs.materialicons.MaterialIconView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <JFXTabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0" prefWidth="916.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab text="Bidder List">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="biddersTableView" prefHeight="415.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="87.0" />
+                        <TextField fx:id="searchInput" layoutY="44.0" prefHeight="27.0" prefWidth="379.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0" />
+                        <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              <Button fx:id="viewBidderButton" mnemonicParsing="false" onAction="#viewBidder" text="View" />
+                           </items>
+                        </ToolBar>
+                        <JFXButton fx:id="searchButton" contentDisplay="GRAPHIC_ONLY" layoutX="387.0" layoutY="50.0" onAction="#search" ripplerFill="BLACK" stylesheets="@../styles/Styles.css" text="Search" AnchorPane.leftAnchor="387.0" AnchorPane.topAnchor="50.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="SEARCH" />
+                           </graphic>
+                        </JFXButton>
+                        <MaterialIconView layoutY="-12.0" />
+                        <JFXButton fx:id="searchButton1" contentDisplay="GRAPHIC_ONLY" layoutX="397.0" layoutY="60.0" onAction="#search" ripplerFill="BLACK" styleClass="fab" stylesheets="@../styles/Styles.css" text="Search" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+                           <graphic>
+                              <FontAwesomeIconView glyphName="PLUS" size="24" />
+                           </graphic>
+                        </JFXButton>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Add/Edit Bidder">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+         </tabs>
+      </JFXTabPane>
+      <ProgressIndicator fx:id="progressIndicator" layoutX="600.0" layoutY="400.0" progress="0.0" />
+   </children>
+</AnchorPane>

@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 import org.controlsfx.control.PrefixSelectionComboBox;
 
 import com.cbmwebdevelopment.auction.Auction;
-import com.cbmwebdevelopment.items.ItemMain;
+//import com.cbmwebdevelopment.items.ItemMain;
 import com.cbmwebdevelopment.tablecontrollers.ViewBidsTableViewController;
 import com.cbmwebdevelopment.tablecontrollers.ViewBidsTableViewController.Bids;
 import java.util.HashMap;
@@ -122,17 +122,17 @@ public class ViewBidsFXMLController implements Initializable {
         bidsTableView.setRowFactory(tv -> {
             TableRow<Bids> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                /*if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Bids bids = row.getItem();
-                    ItemMain itemMain = new ItemMain();
-                    itemMain.isNew = false;
-                    itemMain.itemNumber = new Bid().getItem(bids.getBidId());
+//                    ItemMain itemMain = new ItemMain();
+ //                   itemMain.isNew = false;
+//                    itemMain.itemNumber = new Bid().getItem(bids.getBidId());
                     try {
                         itemMain.start(new Stage());
                     } catch (IOException ex) {
                         System.err.println(ex.getMessage());
                     }
-                }
+                }*/
             });
             return row;
         });
