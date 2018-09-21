@@ -1,6 +1,8 @@
 package com.cbmwebdevelopment.main;
 
 import com.cbmwebdevelopment.auction.AuctionController;
+import com.cbmwebdevelopment.bid.ViewBidsFXMLController;
+import com.cbmwebdevelopment.bidder.BidderListFXMLController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,7 +29,7 @@ public class MainFXMLController implements Initializable {
 
     @FXML
     private StackPane stackPane;
-    
+
     @FXML
     private VBox navigationItemsBox;
 
@@ -41,6 +43,7 @@ public class MainFXMLController implements Initializable {
     ScrollPane scrollPane;
 
     public static ScrollPane mainScrollPane;
+
     @FXML
     protected void auctionDashboardAction(ActionEvent event) {
         setActiveItem(auctionDashboardButton);
@@ -50,7 +53,7 @@ public class MainFXMLController implements Initializable {
             AuctionController controller = (AuctionController) loader.getController();
             controller.scrollPane = scrollPane;
             controller.stackPane = stackPane;
-            
+
             setScrollPane(anchorPane);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -72,7 +75,10 @@ public class MainFXMLController implements Initializable {
     protected void viewBidderListAction(ActionEvent event) {
         setActiveItem(bidderListButton);
         try {
-            AnchorPane anchorPane = new FXMLLoader().load(getClass().getResource("/fxml/BidderListFXML.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BidderListFXML.fxml"));
+            AnchorPane anchorPane = loader.load();
+            BidderListFXMLController controller = (BidderListFXMLController) loader.getController();
+
             setScrollPane(anchorPane);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -83,8 +89,11 @@ public class MainFXMLController implements Initializable {
     protected void viewBidsListAction(ActionEvent event) {
         setActiveItem(bidsListButton);
         try {
-            AnchorPane anchorPane = new FXMLLoader().load(getClass().getResource("/fxml/ViewBidsFXML.fxml"));
-            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewBidsFXML.fxml"));
+            AnchorPane anchorPane = loader.load();
+            ViewBidsFXMLController controller = (ViewBidsFXMLController) loader.getController();
+            controller.stackPane = stackPane;
+
             setScrollPane(anchorPane);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -140,7 +149,7 @@ public class MainFXMLController implements Initializable {
 
         double nodeHeight = node.getHeight();
         double nodeWidth = node.getWidth();
-        
+
         if (spWidth != 0) {
             if (spWidth > nodeWidth) {
                 node.setPrefWidth(spWidth - 2);
@@ -149,7 +158,7 @@ public class MainFXMLController implements Initializable {
             if (spHeight > nodeHeight) {
                 node.setPrefHeight(spHeight - 2);
             }
-        }else{
+        } else {
             node.setPrefWidth(1050);
             node.setPrefHeight(760);
         }
@@ -157,7 +166,7 @@ public class MainFXMLController implements Initializable {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(node);
-        
+
         mainScrollPane = scrollPane;
     }
 

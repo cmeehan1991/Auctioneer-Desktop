@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import org.controlsfx.control.PrefixSelectionComboBox?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.bid.ViewBidsFXMLController">
+<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="1200.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cbmwebdevelopment.bid.ViewBidsFXMLController">
    <children>
-      <ToolBar prefHeight="50.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <items>
-            <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#viewBidAction" prefHeight="0.0" prefWidth="94.0" text="View Bid" />
-            <Button accessibleHelp="Refresh bid feed" accessibleText="Refresh Feed" contentDisplay="TOP" minWidth="59.0" mnemonicParsing="false" onAction="#refreshFeedAction" prefHeight="0.0" prefWidth="126.0" text="Refresh Table" />
-         </items>
-      </ToolBar>
-      <PrefixSelectionComboBox fx:id="auctionSelectionComboBox" layoutX="14.0" layoutY="50.0" prefHeight="27.0" prefWidth="229.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="55.0" />
-      <TableView fx:id="bidsTableView" layoutY="86.0" prefHeight="314.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0" />
-      <ProgressIndicator fx:id="progressIndicator" AnchorPane.bottomAnchor="173.5" AnchorPane.leftAnchor="274.0" AnchorPane.rightAnchor="274.0" AnchorPane.topAnchor="173.5" />
+      <TableView fx:id="bidsTableView" layoutY="86.0" prefHeight="314.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="57.0" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="600.0" layoutY="400.0" progress="0.0" />
+      <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" onAction="#addBidAction" styleClass="fab" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="PLUS" size="32" />
+         </graphic>
+      </JFXButton>
+      <JFXComboBox fx:id="auctionSelectionComboBox" layoutY="50.0" prefHeight="27.0" prefWidth="266.0" promptText="Auction" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="15.0" />
+      <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" layoutX="10.0" layoutY="10.0" onAction="#refreshFeedAction" styleClass="fab" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="75.0">
+         <graphic>
+            <FontAwesomeIconView glyphName="REFRESH" size="32" />
+         </graphic>
+      </JFXButton>
    </children>
 </AnchorPane>

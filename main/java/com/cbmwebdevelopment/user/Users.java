@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -28,7 +27,16 @@ import com.cbmwebdevelopment.alerts.Alerts;
 import com.cbmwebdevelopment.connections.DBConnection;
 import com.cbmwebdevelopment.main.MainApp;
 import com.cbmwebdevelopment.main.Values;
+import static com.cbmwebdevelopment.main.Values.USERS_LINK;
 import com.cbmwebdevelopment.tablecontrollers.UsersTableController.AllUsers;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.HashMap;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,6 +44,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -46,49 +56,65 @@ public class Users {
     /**
      * Add the new user to the database
      *
-     * @param controller
+     * @param username
+     * @param prefix
+     * @param firstName
+     * @param lastName
+     * @param suffix
+     * @param telephone
+     * @param email
+     * @param streetAddress
+     * @param secondaryAddress
+     * @param city
+     * @param state
+     * @param postalCode
      */
-    public void addNewUser(UserInformationController controller) {
+    public String addNewUser(String username, String prefix, String firstName, String lastName, String suffix, String telephone, String email, String streetAddress, String secondaryAddress, String city, String state, String postalCode) {
 
         // Random password
         String password = MainApp.randomPasswordGenerator(16);
-
-        String sql = "INSERT INTO USERS (USERNAME, PASSWORD, PREFIX, FIRST_NAME, LAST_NAME, SUFFIX, TELEPHONE, EMAIL, PRIMARY_ADDRESS, SECONDARY_ADDRESS, CITY, STATE, POSTAL_CODE, RESET_PASSWORD) VALUES(?,MD5(?),?,?,?,?,?,?,?,?,?,?,?,?)";
+        String userId = null;
         try {
-        		Connection conn = new DBConnection().connect();
-            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
 
-            ps.setString(1, controller.username);
-            ps.setString(2, password);
-            ps.setString(3, controller.prefix);
-            ps.setString(4, controller.firstName);
-            ps.setString(5, controller.lastName);
-            ps.setString(6, controller.suffix);
-            ps.setString(7, controller.telephone);
-            ps.setString(8, controller.email);
-            ps.setString(9, controller.streetAddress);
-            ps.setString(10, controller.secondaryAddress);
-            ps.setString(11, controller.city);
-            ps.setString(12, controller.state);
-            ps.setString(13, controller.postalCode);
-            ps.setBoolean(14, true);
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                String key = String.valueOf(rs.getInt(1));
-                sendEmailNotification(password, controller.firstName + " " + controller.lastName, controller.username, controller.email, key);
-                Alert alert = new Alerts().informationAlert("User Added", "The user was successfully added.", controller.firstName + " " + controller.lastName + " was successfully added.");
-                alert.showAndWait();
-            }
-            conn.close();
-        } catch (SQLException ex) {
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("add_new_user", "UTF-8");
+            data += "&" + URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
+            data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+            data += "&" + URLEncoder.encode("prefix", "UTF-8") + "=" + URLEncoder.encode(prefix, "UTF-8");
+            data += "&" + URLEncoder.encode("first_name", "UTF-8") + "=" + URLEncoder.encode(firstName, "UTF-8");
+            data += "&" + URLEncoder.encode("last_name", "UTF-8") + "=" + URLEncoder.encode(lastName, "UTF-8");
+            data += "&" + URLEncoder.encode("suffix", "UTF-8") + "=" + URLEncoder.encode(suffix, "UTF-8");
+            data += "&" + URLEncoder.encode("telephone", "UTF-8") + "=" + URLEncoder.encode(telephone, "UTF-8");
+            data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+            data += "&" + URLEncoder.encode("street_address", "UTF-8") + "=" + URLEncoder.encode(streetAddress, "UTF-8");
+            data += "&" + URLEncoder.encode("secondary_address", "UTF-8") + "=" + URLEncoder.encode(secondaryAddress, "UTF-8");
+            data += "&" + URLEncoder.encode("city", "UTF-8") + "=" + URLEncoder.encode(city, "UTF-8");
+            data += "&" + URLEncoder.encode("state", "UTF-8") + "=" + URLEncoder.encode(state, "UTF-8");
+            data += "&" + URLEncoder.encode("postal_code", "UTF-8") + "=" + URLEncoder.encode(postalCode, "UTF-8");
+            data += "&" + URLEncoder.encode("organization_id", "UTF-8") + "=" + URLEncoder.encode(System.getProperty("ORGANIZATION_ID"), "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            JSONObject jsonObj = new JSONObject(reader.readLine());
+            userId = jsonObj.getString("ID");
+
+            writer.close();
+            reader.close();
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
+        return userId;
     }
 
     private String addSearchTerms() {
-    		String terms = " AND (ID = ? OR FIRST_NAME = ? OR LAST_NAME = ? OR USERNAME = ? OR ID LIKE ? OR FIRST_NAME LIKE ? OR LAST_NAME LIKE ? OR USERNAME LIKE ?)";
-    		return terms;
+        String terms = " AND (ID = ? OR FIRST_NAME = ? OR LAST_NAME = ? OR USERNAME = ? OR ID LIKE ? OR FIRST_NAME LIKE ? OR LAST_NAME LIKE ? OR USERNAME LIKE ?)";
+        return terms;
     }
 
     /**
@@ -101,25 +127,34 @@ public class Users {
      */
     public ObservableList<String> getAllUsers() {
         ObservableList<String> users = FXCollections.observableArrayList(); // The observable list to be returned
-        Connection conn = new DBConnection().connect();
-        String sql = "SELECT ID, CONCAT(FIRST_NAME, ' ', LAST_NAME) AS 'NAME' FROM USERS";
+
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                do {
-                    users.add(rs.getString("ID") + " - " + rs.getString("NAME"));
-                } while (rs.next());
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("get_all_users", "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+            writer.close();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            JSONArray jsonArr = new JSONArray(reader.readLine());
+            if (jsonArr.length() > 0) {
+                for (int i = 0; i < jsonArr.length(); i++) {
+                    JSONObject jsonObj = jsonArr.getJSONObject(i);
+                    users.add(jsonObj.getString("ID") + " - " + jsonObj.getString("NAME"));
+                }
             }
-        } catch (SQLException ex) {
+
+            reader.close();
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
+
         return users;
     }
 
@@ -129,112 +164,103 @@ public class Users {
      * @param uname
      * @return
      */
-    private String getUserId(String uname) {
-        String uId = null;
-        Connection conn = new DBConnection().connect();
-        String sql = "SELECT ID FROM USERS WHERE USERNAME = ?";
+    public String getUserId(String username) {
+        String userId = null;
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, uname);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                uId = rs.getString("ID");
-            }
-        } catch (SQLException ex) {
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("get_user_id", "UTF-8");
+            data += "&" + URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            JSONObject jsonObj = new JSONObject(reader.readLine());
+            userId = jsonObj.getString("ID");
+
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
-        return uId;
+        return userId;
     }
 
     /**
      * Reset the user's password.
      *
-     * @param controller
+     * @param userId
      * @param username
+     * @return
      */
-    public void resetPassword(UserInformationController controller, String username) {
-        Connection conn = new DBConnection().connect();
-        String userId = username == null ? controller.userId : getUserId(username);
-        System.out.println(username);
-        System.out.println(getUserId(username));
-        String password = MainApp.randomPasswordGenerator(16);
-        String sql = "UPDATE USERS SET PASSWORD = MD5(?), RESET_PASSWORD = ? WHERE ID = ?";
+    public boolean resetPassword(String username, String userId) {
+        boolean success = false;
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, password);
-            ps.setBoolean(2, true);
-            ps.setString(3, userId);
-            System.out.println(ps.toString());
-            int rs = ps.executeUpdate();
-            if (rs > 0) {
-                sendEmailNotification(password, controller.firstName + " " + controller.lastName, controller.username, controller.email, userId);
-                Notifications.create().text("Password updated for " + controller.firstName).showInformation();
-            }else {
-            		System.out.println("Password Not Updated");
-            }
-        } catch (SQLException ex) {
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("update_password", "UTF-8");
+            data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(MainApp.randomPasswordGenerator(8), "UTF-8");
+            data += "&" + URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(userId, "UTF-8");
+            data += "&" + URLEncoder.encode("reset", "UTF-8") + "=" + URLEncoder.encode("true", "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONObject jsonObj = new JSONObject(reader.readLine());
+            success = jsonObj.getBoolean("SUCCESS");
+
+            writer.close();
+            reader.close();
+
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
+
+        return success;
     }
 
     /**
-     *  Get an observable list of all users. 
-     *  If there are terms then the list will be filtered based on the search terms using 
-     *  the parseSearchTerms method. 
+     * Get an observable list of all users. If there are terms then the list
+     * will be filtered based on the search terms using the parseSearchTerms
+     * method.
+     *
      * @param terms
      * @return
      */
-    public ObservableList<AllUsers> searchAllUsers(String terms){
-    		ObservableList<AllUsers> data = FXCollections.observableArrayList();
-    		Connection conn = new DBConnection().connect();
-    		String sql = "SELECT ID, CONCAT(FIRST_NAME, ' ', LAST_NAME) AS 'NAME', USERNAME FROM USERS WHERE ORGANIZATION_ID = ?";
-    		
-    		if(terms != null) {
-    			sql += addSearchTerms();
-    		}
-    		
-    		try {
-    			PreparedStatement ps = conn.prepareStatement(sql);
-    			ps.setString(1, Values.ORGANIZATION_ID);
-    			if(terms != null) {
-    				ps.setString(2, terms);
-    				ps.setString(3, terms);
-    				ps.setString(4, terms);
-    				ps.setString(5, terms);
-    				ps.setString(6, "%" + terms + "%");
-    				ps.setString(7, "%" + terms + "%");
-    				ps.setString(8, "%" + terms + "%");
-    				ps.setString(9, "%" + terms + "%");
-    			}
-    			ResultSet rs = ps.executeQuery();
-    			if(rs.next()) {
-    				do {
-    					data.addAll(new AllUsers(rs.getInt("ID"), rs.getString("NAME"), rs.getString("USERNAME")));
-    				}while(rs.next());
-    			}
-    		}catch(SQLException ex) {
-    			System.err.println(ex.getMessage());
-    		}finally {
-    			try {
-    				conn.close();
-    			}catch(SQLException ex) {
-    				System.err.println(ex.getMessage());
-    			}
-    		}
-    		
-    		return data;
+    public ObservableList<AllUsers> searchAllUsers(String terms) {
+        ObservableList<AllUsers> users = FXCollections.observableArrayList();
+
+        try {
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("search_all_users", "UTF-8");
+            data += "&" + URLEncoder.encode("organization_id", "UTF-8") + "=" + URLEncoder.encode(System.getProperty("ORGANIZATION_ID"), "UTF-8");
+            data += "&" + URLEncoder.encode("terms", "UTF-8") + "=" + URLEncoder.encode(terms, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONArray jsonArr = new JSONArray(reader.readLine());
+            if (jsonArr.length() > 0) {
+                for (int i = 0; i < jsonArr.length(); i++) {
+                    JSONObject jsonObj = jsonArr.getJSONObject(i);
+                    users.addAll(new AllUsers(jsonObj.getInt("ID"), jsonObj.getString("NAME"), jsonObj.getString("USERNAME")));
+                }
+            }
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        return users;
     }
 
     /**
@@ -302,119 +328,135 @@ public class Users {
      * @param controller
      * @param id
      */
-    public void setUserInformation(UserInformationController controller, String id) {
-        Connection conn = new DBConnection().connect();
-        String sql = "SELECT ID, USERNAME, PREFIX, FIRST_NAME, LAST_NAME, SUFFIX, TELEPHONE, EMAIL, PRIMARY_ADDRESS, SECONDARY_ADDRESS, CITY, STATE, POSTAL_CODE FROM USERS WHERE ID = ?";
+    public HashMap<String, String> getUserInformation(String userId) {
+        HashMap<String, String> userInfo = new HashMap<>();
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, Integer.parseInt(id));
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                controller.userIdLabel.setText(rs.getString("ID"));
-                controller.prefixComboBox.getSelectionModel().select(rs.getString("PREFIX"));
-                controller.firstNameTextField.setText(rs.getString("FIRST_NAME"));
-                controller.lastNameTextField.setText(rs.getString("LAST_NAME"));
-                controller.suffixComboBox.getSelectionModel().select(rs.getString("SUFFIX"));
-                controller.streetAddressTextField.setText(rs.getString("PRIMARY_ADDRESS"));
-                controller.secondaryAddressTextField.setText(rs.getString("SECONDARY_ADDRESS"));
-                controller.cityTextField.setText(rs.getString("CITY"));
-                controller.stateComboBox.getSelectionModel().select(rs.getString("STATE"));
-                controller.postalCodeTextField.setText(rs.getString("POSTAL_CODE"));
-                controller.telephoneTextField.setText(rs.getString("TELEPHONE"));
-                controller.emailTextField.setText(rs.getString("EMAIL"));
-                controller.usernameTextField.setText(rs.getString("USERNAME"));
-            }
-        } catch (SQLException ex) {
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("get_user_information", "UTF-8");
+            data += "&" + URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(userId, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONObject jsonObj = new JSONObject(reader.readLine());
+            
+            userInfo.put("ID", jsonObj.getString("ID"));
+            userInfo.put("PREFIX", jsonObj.getString("PREFIX"));
+            userInfo.put("FIRST_NAME", jsonObj.getString("FIRST_NAME"));
+            userInfo.put("LAST_NAME", jsonObj.getString("LAST_NAME"));
+            userInfo.put("SUFFIX", jsonObj.getString("SUFFIX"));
+            userInfo.put("PRIMARY_ADDRESS", jsonObj.getString("PRIMARY_ADDRESS"));
+            userInfo.put("SECONDARY_ADDRESS", jsonObj.getString("SECONDARY_ADDRESS"));
+            userInfo.put("CITY", jsonObj.getString("CITY"));
+            userInfo.put("STATE", jsonObj.getString("STATE"));
+            userInfo.put("POSTAL_CODE", jsonObj.getString("POSTAL_CODE"));
+            userInfo.put("TELEPHONE", jsonObj.getString("TELEPHONE"));
+            userInfo.put("EMAIL", jsonObj.getString("EMAIL"));
+            userInfo.put("USERNAME", jsonObj.getString("USERNAME"));
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
-        }
-    }
-    
-    /**
-     * Update the user information
-     * @param controller 
-     */
-    public void updateUserInformation(UserInformationController controller) {
-        Connection conn = new DBConnection().connect();
-        String sql = "UPDATE USERS SET USERNAME = ?, PREFIX = ?, FIRST_NAME = ?, LAST_NAME = ?, SUFFIX = ?, TELEPHONE = ?, EMAIL = ?, PRIMARY_ADDRESS = ?, SECONDARY_ADDRESS = ?, CITY = ?, STATE = ?, POSTAL_CODE = ? WHERE ID = ?";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, controller.username);
-            ps.setString(2, controller.prefix);
-            ps.setString(3, controller.firstName);
-            ps.setString(4, controller.lastName);
-            ps.setString(5, controller.suffix);
-            ps.setString(6, controller.telephone);
-            ps.setString(7, controller.email);
-            ps.setString(8, controller.streetAddress);
-            ps.setString(9, controller.secondaryAddress);
-            ps.setString(10, controller.city);
-            ps.setString(11, controller.state);
-            ps.setString(12, controller.postalCode);
-            ps.setInt(13, Integer.parseInt(controller.userId));
-            int rs = ps.executeUpdate();
-            if(rs > 0){
-               Notifications.create().text("User information saved!").position(Pos.TOP_RIGHT).show();
-            }else{
-                Notifications.create().text("User information NOT saved!").position(Pos.TOP_RIGHT).showWarning();
-            }
-        } catch (SQLException ex) {
-            ArrayList<String> error = new ArrayList<>();
-            error.add(ex.getMessage());
-            error.add(ex.getSQLState());
-            new Alerts().errorAlert("Error", "Error saving user information", "Error information:", error).showAndWait();
-            System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
 
+        return userInfo;
     }
-    
+
+    /**
+     * Update the user information. Return True if the user's information was
+     * updated successfully. Otherwise return false.
+     *
+     * @param username
+     * @param prefix
+     * @param userId
+     * @param lastName
+     * @param firstName
+     * @param telephone
+     * @param suffix
+     * @param primaryAddress
+     * @param email
+     * @param secondaryAddress
+     * @param state
+     * @param city
+     * @param postalCode
+     * @return boolean value - true if the user was updated.
+     */
+    public boolean updateUserInformation(String username, String prefix, String firstName, String lastName, String suffix, String telephone, String email, String primaryAddress, String secondaryAddress, String city, String state, String postalCode, String userId) {
+        boolean response = false;
+
+        try {
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("update_user_information", "UTF-8");
+            data += "&" + URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
+            data += "&" + URLEncoder.encode("prefix", "UTF-8") + "=" + URLEncoder.encode(prefix, "UTF-8");
+            data += "&" + URLEncoder.encode("first_name", "UTF-8") + "=" + URLEncoder.encode(firstName, "UTF-8");
+            data += "&" + URLEncoder.encode("last_name", "UTF-8") + "=" + URLEncoder.encode(lastName, "UTF-8");
+            data += "&" + URLEncoder.encode("suffix", "UTF-8") + "=" + URLEncoder.encode(suffix, "UTF-8");
+            data += "&" + URLEncoder.encode("telephone", "UTF-8") + "=" + URLEncoder.encode(telephone, "UTF-8");
+            data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+            data += "&" + URLEncoder.encode("street_address", "UTF-8") + "=" + URLEncoder.encode(primaryAddress, "UTF-8");
+            data += "&" + URLEncoder.encode("secondary_address", "UTF-8") + "=" + URLEncoder.encode(secondaryAddress, "UTF-8");
+            data += "&" + URLEncoder.encode("city", "UTF-8") + "=" + URLEncoder.encode(city, "UTF-8");
+            data += "&" + URLEncoder.encode("state", "UTF-8") + "=" + URLEncoder.encode(state, "UTF-8");
+            data += "&" + URLEncoder.encode("postal_code", "UTF-8") + "=" + URLEncoder.encode(postalCode, "UTF-8");
+            data += "&" + URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(userId, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONObject jsonObject = new JSONObject(reader.readLine());
+
+            response = jsonObject.getBoolean("SUCCESS");
+
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        return response;
+
+    }
+
     /**
      * Update the user's password with their new password.
      *
      * @param userId
      * @param password
-     * @param controller
      * @throws Exception
      */
-    public void updateUserPassword(String userId, String password, UserSignInFXMLController controller) throws Exception {
-        Connection conn = new DBConnection().connect();
-        String sql = "UPDATE USERS SET PASSWORD = MD5(?), RESET_PASSWORD = ? WHERE ID = ?";
+    public boolean updateUserPassword(String userId, String password) throws Exception {
+        boolean success = false;
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, password);
-            ps.setBoolean(2, false);
-            ps.setString(3, userId);
-            int rs = ps.executeUpdate();
-            if (rs > 0) {
-                MainApp main = new MainApp();
-                Values.IS_SIGNED_IN = true;
-                Values.USER_ID = userId;
-                main.start(new Stage());
+            URL url = new URL(USERS_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("update_password", "UTF-8");
+            data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+            data += "&" + URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(userId, "UTF-8");
+            data += "&" + URLEncoder.encode("reset", "UTF-8") + "=" + URLEncoder.encode("false", "UTF-8");
 
-                Stage currentStage = (Stage) controller.confirmNewPasswordField.getScene().getWindow();
-                currentStage.close();
-            } else {
-            }
-        } catch (SQLException ex) {
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONObject jsonObj = new JSONObject(reader.readLine());
+            success = jsonObj.getBoolean("SUCCESS");
+
+            writer.close();
+            reader.close();
+
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
+        return success;
     }
 
     /**

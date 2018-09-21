@@ -5,9 +5,9 @@
  */
 package com.cbmwebdevelopment.auction;
 
-import com.cbmwebdevelopment.bidder.Bidder;
-import com.cbmwebdevelopment.tablecontrollers.BiddersTableController;
-import com.cbmwebdevelopment.tablecontrollers.BiddersTableController.Bidders;
+import com.cbmwebdevelopment.items.Item;
+import com.cbmwebdevelopment.tablecontrollers.ItemsTableController;
+import com.cbmwebdevelopment.tablecontrollers.ItemsTableController.AllItems;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
@@ -28,40 +28,40 @@ import javafx.scene.layout.VBox;
  *
  * @author cmeehan
  */
-public class AuctionItems {
+public class AuctionItemsDialog {
 
-    private final BiddersTableController biddersTableController = new BiddersTableController();
-    private ObservableList<Bidders> bidders = FXCollections.observableArrayList();
+    private final ItemsTableController itemsController = new ItemsTableController();
+    private ObservableList<AllItems> allItems = FXCollections.observableArrayList();
     private boolean added = false;
-    private TableView<Bidders> biddersTable;
+    private TableView<AllItems> allItemsTable;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
-     * Create a JFX Dialog that allows the user to add bidders to an auction.
+     * Create a JFX Dialog that allows the user to add allItems to an auction.
      *
      * @param auctionId
      * @param stackPane
      * @return
      */
-    public JFXDialog attendeesDialog(String auctionId, StackPane stackPane) {
+    public JFXDialog auctionItemsDialog(String auctionId, StackPane stackPane) {
         JFXDialogLayout dialogContent = new JFXDialogLayout();
         JFXDialog dialog = new JFXDialog(stackPane, dialogContent, JFXDialog.DialogTransition.CENTER);
 
         VBox content = new VBox();
 
-        // Initalize the bidders tableview and
-        biddersTable = new TableView<>();
+        // Initalize the allItems tableview and
+        allItemsTable = new TableView<>();
         // Set the table controller
-        biddersTableController.biddersTable(biddersTable);
-        // Search for and return all bidders
-        searchBidders(null);
+        itemsController.itemsTable(allItemsTable);
+        // Search for and return all allItems
+        searchAllItems(null);
 
         // Create a confirmation button that will add the attendees to the auction. 
-        JFXButton confirmButton = new JFXButton("Add Attendee(s)");
+        JFXButton confirmButton = new JFXButton("Add Item(s)");
         confirmButton.setOnAction(evt -> {
-            ObservableList<Bidders> selectedBidders = biddersTable.getSelectionModel().getSelectedItems();
+            ObservableList<AllItems> selectedAllItems = allItemsTable.getSelectionModel().getSelectedItems();
             try {
-                boolean close = addBidder(auctionId, selectedBidders).get();
+                boolean close = addItem(auctionId, selectedAllItems).get();
                 if (close) {
                     dialog.close();
                 } else {
@@ -81,10 +81,10 @@ public class AuctionItems {
         });
 
         // Add the content to the VBox
-        content.getChildren().addAll(searchField(), biddersTable);
+        content.getChildren().addAll(searchField(), allItemsTable);
 
         // Set the dialog content
-        dialogContent.setHeading(new Label("Add Attendee(s)"));
+        dialogContent.setHeading(new Label("Add Item(s)"));
         dialogContent.setBody(content);
         dialogContent.setActions(confirmButton, closeButton);
 
@@ -96,7 +96,7 @@ public class AuctionItems {
 
     /**
      * Display an error notification advising the user that the selected
-     * bidder(s) were not added to the auction.
+     * Items(s) were not added to the auction.
      *
      * @param stackPane
      * @return
@@ -106,7 +106,7 @@ public class AuctionItems {
         JFXDialogLayout content = new JFXDialogLayout();
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.TOP);
 
-        content.setBody(new Label("Some of the selected bidders were not added. Please check the auction's bidders and try again."));
+        content.setBody(new Label("Some of the selected items were not added. Please check the auction's items and try again."));
 
         JFXButton closeButton = new JFXButton("OK");
         closeButton.setDefaultButton(true);
@@ -120,18 +120,18 @@ public class AuctionItems {
     }
 
     /**
-     * Add the selected bidder(s) to the auction as attendees.
+     * Add the selected allItems(s) to the auction as attendees.
      *
      * @param auctionId
-     * @param selectedBidders
+     * @param selectedAllItems
      * @return
      */
-    private Future<Boolean> addBidder(String auctionId, ObservableList<Bidders> selectedBidders) {
+    private Future<Boolean> addItem(String auctionId, ObservableList<AllItems> selectedAllItems) {
         return executor.submit(() -> {
             Auction auction = new Auction();
-            selectedBidders.forEach(bidder -> {
-                int bidderId = bidder.getId();
-                boolean attendeeAdded = auction.addAttendee(Integer.parseInt(auctionId), bidderId);
+            selectedAllItems.forEach(allItems -> {
+                String itemId = String.valueOf(allItems.getId());
+                boolean attendeeAdded = auction.addItem(auctionId, itemId);
 
                 if (!attendeeAdded) {
                     added = false;
@@ -145,17 +145,17 @@ public class AuctionItems {
     }
 
     /**
-     * Search for the bidders concurrently based on string inputs.
+     * Search for the allItems concurrently based on string inputs.
      *
      * @param terms
      */
-    private void searchBidders(String terms) {
+    private void searchAllItems(String terms) {
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
-            Bidder bidder = new Bidder();
-            bidders = bidder.getBidders(terms);
+            Item items = new Item();
+            allItems = items.getAuctionItems(terms, null);
             Platform.runLater(() -> {
-                biddersTable.getItems().setAll(bidders);
+                allItemsTable.getItems().setAll(allItems);
             });
             executor.shutdown();
         });
@@ -170,7 +170,7 @@ public class AuctionItems {
         TextField textField = new TextField();
 
         textField.textProperty().addListener((obs, ov, nv) -> {
-            searchBidders(nv);
+            searchAllItems(nv);
         });
         return textField;
     }

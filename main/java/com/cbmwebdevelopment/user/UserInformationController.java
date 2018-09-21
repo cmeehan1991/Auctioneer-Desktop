@@ -74,7 +74,7 @@ public class UserInformationController implements Initializable {
     protected void resetPassword(ActionEvent event) {
 	    	if(validateEntries()) {
 	        Users users = new Users();
-	        users.resetPassword(this, username);
+	        users.resetPassword(username, userId);
 	    	}
     }
 
@@ -82,7 +82,7 @@ public class UserInformationController implements Initializable {
     protected void saveUser(ActionEvent event) {
         if (validateEntries()) {
             if (userId.equals("N/A")) {
-                new Users().addNewUser(this);
+//                new Users().addNewUser(this);
             } else {
                 new Users().updateUserInformation(this);
             }

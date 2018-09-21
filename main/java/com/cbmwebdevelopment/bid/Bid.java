@@ -7,21 +7,24 @@ package com.cbmwebdevelopment.bid;
 
 import static com.cbmwebdevelopment.main.Values.CURRENCY_FORMAT;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.cbmwebdevelopment.connections.DBConnection;
+import static com.cbmwebdevelopment.main.Values.BID_LINK;
 import com.cbmwebdevelopment.tablecontrollers.ViewBidsTableViewController.Bids;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -38,43 +41,70 @@ public class Bid {
      */
     private boolean bidExists(String id) {
         boolean exists = false;
-        String sql = "SELECT ID FROM BIDS WHERE ITEM_ID = ?";
         try {
-            Connection conn = new DBConnection().connect();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                exists = true;
-            }
-            conn.close();
-        } catch (SQLException ex) {
+            // Establish connection;
+            URL url = new URL(BID_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            // Set the arguments
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("bid_exists", "UTF-8");
+            data += "&" + URLEncoder.encode("item_id", "UTF-8") + "=" + URLEncoder.encode(id, "UTF-8");
+
+            // Write to the output stream
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONObject jsonObject = new JSONObject(reader.readLine());
+            exists = jsonObject.getBoolean("EXISTS");
+
+            writer.close();
+            reader.close();
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
+
         return exists;
     }
 
+    /**
+     * Get the bid information
+     *
+     * @param bidId
+     * @return
+     */
     protected HashMap<String, String> getBid(String bidId) {
-        HashMap<String, String> data = new HashMap<>();
-        String sql = "SELECT BIDS.ID, BIDS.AMOUNT AS 'BID_AMOUNT', BIDS.ITEM_ID AS 'ITEM_ID', AUCTION_ITEMS.DESCRIPTION AS 'ITEM_DESCRIPTION', AUCTION_ITEMS.NAME AS 'ITEM_NAME', BIDS.USER_ID AS 'BIDDER_ID' FROM BIDS INNER JOIN AUCTION_ITEMS ON AUCTION_ITEMS.ID = BIDS.ITEM_ID WHERE BIDS.ID = ?";
+        HashMap<String, String> bidData = new HashMap<>();
+
         try {
-            Connection conn = new DBConnection().connect();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, bidId);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                data.put("ITEM_ID", rs.getString("ITEM_ID"));
-                data.put("ITEM_NAME", rs.getString("ITEM_NAME"));
-                data.put("ITEM_DESCRIPTION", rs.getString("ITEM_DESCRIPTION"));
-                data.put("BIDDER_ID", rs.getString("BIDDER_ID"));
-                data.put("BID_AMOUNT", CURRENCY_FORMAT.format(rs.getDouble("BID_AMOUNT")));
+            URL url = new URL(BID_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("get_bid", "UTF-8");
+            data += "&" + URLEncoder.encode("bid_id", "UTF-8") + "=" + URLEncoder.encode(bidId, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            JSONObject results = new JSONObject(reader.readLine());
+            if (results.getBoolean("SUCCESS")) {
+                bidData.put("ITEM_ID", results.getString("ITEM_ID"));
+                bidData.put("ITEM_NAME", results.getString("ITEM_NAME"));
+                bidData.put("ITEM_DESCRIPTION", results.getString("ITEM_DESCRIPTION"));
+                bidData.put("BIDDER_ID", results.getString("BIDDER_ID"));
+                bidData.put("BID_AMOUNT", CURRENCY_FORMAT.format(results.getDouble("BID_AMOUNT")));
             }
-            conn.close();
-        } catch (SQLException ex) {
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
-        return data;
+
+        return bidData;
     }
 
     /**
@@ -83,137 +113,112 @@ public class Bid {
      * @return
      */
     protected ObservableList<Bids> getBids(String auctionId) {
-        ObservableList<Bids> data = FXCollections.observableArrayList();
-        String sql = "SELECT BIDS.ID AS 'ID', AUCTION_ITEMS.NAME AS 'ITEM_NAME', CONCAT(IF(BIDDERS.PREFIX != '-', CONCAT(BIDDERS.PREFIX, ' '), ''), BIDDERS.FIRST_NAME, ' ', BIDDERS.LAST_NAME, IF(BIDDERS.SUFFIX != '-', CONCAT(', ', BIDDERS.SUFFIX), '')) AS 'NAME', BIDS.AMOUNT AS 'AMOUNT' FROM BIDS INNER JOIN BIDDERS ON BIDDERS.ID = BIDS.USER_ID INNER JOIN AUCTION_ITEMS ON AUCTION_ITEMS.ID = BIDS.ITEM_ID";
-        if (auctionId != null) {
-            sql += " WHERE AUCTION_ITEMS.AUCTION_ID = ?";
-        }
+        ObservableList<Bids> bidData = FXCollections.observableArrayList();
         try {
-            Connection conn = new DBConnection().connect();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            if (auctionId != null) {
-                ps.setString(1, String.valueOf(auctionId));
+            URL url = new URL(BID_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("get_bids", "UTF-8");
+            data += "&" + URLEncoder.encode("organization_id", "UTF-8") + "=" + URLEncoder.encode(System.getProperty("ORGANIZATION_ID"), "UTF-8");
+            data += "&" + URLEncoder.encode("auction_id", "UTF-8") + "=" + URLEncoder.encode(auctionId, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONArray jsonArray = new JSONArray(reader.readLine());
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                bidData.add(new Bids(jsonObject.getString("ID"), jsonObject.getString("ITEM_NAME"), jsonObject.getString("NAME"), jsonObject.getString("BID_AMOUNT")));
             }
-            System.out.println(ps);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                do {
-                    data.addAll(new Bids(rs.getString("ID"), rs.getString("ITEM_NAME"), rs.getString("NAME"), CURRENCY_FORMAT.format(rs.getDouble("AMOUNT"))));
-                } while (rs.next());
-            }
-            ps.close();
-            conn.close();
-        } catch (SQLException ex) {
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
-        return data;
-    }
-
-    /**
-     * Get the item ID that was won.
-     *
-     * @param id
-     * @return
-     */
-    protected String getItem(String id) {
-        String itemId = null;
-        Connection conn = new DBConnection().connect();
-        String sql = "SELECT ITEM_ID FROM BIDS WHERE ID = ?";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                itemId = rs.getString("ITEM_ID");
-            }
-        } catch (SQLException ex) {
-            System.err.println(ex.getMessage());;
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
-        }
-
-        return itemId;
+        return bidData;
     }
 
     /**
      * Submit the winning bid to the database.
      *
-     * @param controller
+     * @param bidAmount
+     * @param bidderId
+     * @param itemNumber
+     * @param bidId
+     * @return
      */
-    protected void submitBid(BidFXMLController controller) {
-        Connection conn = new DBConnection().connect();
-        String sql;
-        if (bidExists(controller.itemNumber)) {
-            sql = "UPDATE BIDS SET AMOUNT = ?, USER_ID = ? WHERE ITEM_ID = ?";
-        } else {
-            sql = "INSERT INTO BIDS (AMOUNT, USER_ID, ITEM_ID) VALUES (?,?,?)";
-        }
+    protected boolean submitBid(String bidAmount, String bidderId, String itemNumber, String bidId) {
+        boolean submitted = false;
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, controller.bidAmount);
-            ps.setString(2, controller.bidderNumber);
-            ps.setString(3, controller.itemNumber);
-            ps.executeUpdate();
+            URL url = new URL(BID_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
 
-            ps.close();
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Bid Submitted");
-            alert.setHeaderText("The bid has been successfully submitted");
-            alert.setContentText("The bid was successfully submitted.");
-            alert.showAndWait();
-        } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Databae Error");
-            alert.setHeaderText("Error submitting the bid to the database");
-            alert.setContentText("Error Message:\n" + ex.getMessage());
-            alert.showAndWait();
-            System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
+            String data = "&" + URLEncoder.encode("bid_amount", "UTF-8") + "=" + URLEncoder.encode(bidAmount, "UTF-8");
+            data += "&" + URLEncoder.encode("bidder_id", "UTF-8") + "=" + URLEncoder.encode(bidderId, "UTF-8");
+
+            if (bidId != null) {
+                data += "&" + URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("update_bid", "UTF-8");
+                data += "&" + URLEncoder.encode("bid_id", "UTF-8") + "=" + URLEncoder.encode(bidId, "UTF-8");
+
+            } else {
+                data += "&" + URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("new_bid", "UTF-8");
+                data += "&" + URLEncoder.encode("item_number", "UTF-8") + "=" + URLEncoder.encode(itemNumber, "UTF-8");
             }
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            JSONObject jsonObj = new JSONObject(reader.readLine());
+
+            submitted = jsonObj.getBoolean("SUCCESS");
+
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
         }
+        return submitted;
     }
 
     public HashMap<Integer, List<String>> winningBidInformation(String id) {
         HashMap<Integer, List<String>> list = new HashMap<>();
-        Connection conn = new DBConnection().connect();
-        String sql = "SELECT AUCTION_ITEMS.NAME AS 'ITEM NAME', AUCTION_ITEMS.DESCRIPTION AS 'ITEM DESCRIPTION', BIDS.AMOUNT AS 'WINNING AMOUNT', CONCAT(BIDDERS.FIRST_NAME, ' ', BIDDERS.LAST_NAME) AS 'WINNER NAME', BIDDERS.ID AS 'BIDDER ID' FROM BIDS INNER JOIN AUCTION_ITEMS ON BIDS.ITEM_ID = AUCTION_ITEMS.ID INNER JOIN BIDDERS ON BIDS.USER_ID = BIDDERS.ID WHERE AUCTION_ITEMS.AUCTION_ID = ?";
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, id);
-            System.out.println(ps);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Integer integer = 1;
-                do {
-                    list.put(integer, new ArrayList<String>() {
+            URL url = new URL(BID_LINK);
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+
+            String data = URLEncoder.encode("action", "UTF-8") + "=" + URLEncoder.encode("winning_bid", "UTF-8");
+            data += "&" + URLEncoder.encode("auction_id", "UTF-8") + "=" + URLEncoder.encode(id, "UTF-8");
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(data);
+            writer.flush();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            JSONArray jsonArr = new JSONArray(reader.readLine());
+            if (jsonArr.length() > 0) {
+                Integer i = 1;
+                for (int c = 0; c < jsonArr.length(); c++) {
+                    JSONObject jsonObj = jsonArr.getJSONObject(c);
+                    list.put(i, new ArrayList<String>() {
                         {
-                            add(rs.getString("ITEM NAME"));
-                            add(rs.getString("ITEM DESCRIPTION"));
-                            add(CURRENCY_FORMAT.format(rs.getDouble("WINNING AMOUNT")));
-                            add(rs.getString("WINNER NAME"));
-                            add(rs.getString("BIDDER ID"));
+                            add(jsonObj.getString("ITEM NAME"));
+                            add(jsonObj.getString("ITEM DESCRIPTION"));
+                            add(CURRENCY_FORMAT.format(jsonObj.getDouble("WINNING AMOUNT")));
+                            add(jsonObj.getString("WINNER NAME"));
+                            add(jsonObj.getString("BIDDER ID"));
                         }
                     });
-                    integer++;
-                } while (rs.next());
+                }
+                i++;
             }
-        } catch (SQLException ex) {
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
-        }
+        } 
         return list;
     }
 }

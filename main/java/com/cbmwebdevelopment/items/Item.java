@@ -85,31 +85,29 @@ public class Item {
         return data;
     }
 
-    public void getItem(String id, BidFXMLController controller) {
-        Connection conn = new DBConnection().connect();
-        String sql = "SELECT NAME, DESCRIPTION, CLOSED FROM AUCTION_ITEMS WHERE ID = ?";
+    /**
+     * Get an item and return the name & description
+     * @param id
+     * @return 
+     */
+    public HashMap<String, String> getItem(String id) {
+        HashMap<String, String> item = new HashMap<>();
+
+        String sql = "SELECT NAME, DESCRIPTION FROM AUCTION_ITEMS WHERE ID = ?";
         try {
+            Connection conn = new DBConnection().connect();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                controller.itemNameTextField.setText(rs.getString("NAME"));
-                controller.itemDescriptionTextField.setText(rs.getString("DESCRIPTION"));
-                if (rs.getBoolean("CLOSED")) {
-                    controller.submitWinnerButton.setDisable(true);
-                } else {
-                    controller.submitWinnerButton.setDisable(false);
-                }
+                item.put("NAME", rs.getString("NAME"));
+                item.put("DESCRIPTION", rs.getString("DESCRIPTION"));
             }
+            conn.close();
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
-        }
+        } 
+        return item;
     }
 
     /**

@@ -5,20 +5,16 @@
  */
 package com.cbmwebdevelopment.bid;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.controlsfx.control.PrefixSelectionComboBox;
-
 import com.cbmwebdevelopment.auction.Auction;
-//import com.cbmwebdevelopment.items.ItemMain;
 import com.cbmwebdevelopment.tablecontrollers.ViewBidsTableViewController;
 import com.cbmwebdevelopment.tablecontrollers.ViewBidsTableViewController.Bids;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXDialog;
 import java.util.HashMap;
 
 import javafx.application.Platform;
@@ -31,7 +27,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
 
 /**
  * FXML Controller class
@@ -47,23 +43,19 @@ public class ViewBidsFXMLController implements Initializable {
     ProgressIndicator progressIndicator;
 
     @FXML
-    PrefixSelectionComboBox<String> auctionSelectionComboBox;
+    JFXComboBox<String> auctionSelectionComboBox;
 
     ViewBidsTableViewController tableViewController;
     private final ObservableList<Bids> DATA = FXCollections.observableArrayList();
     private Bid bid = new Bid();
     private ObservableList<String> auctionIds, auctionNames;
     private HashMap<String, String> auctions;
+    public StackPane stackPane;
 
     @FXML
-    protected void viewBidAction(ActionEvent event) throws IOException, FileNotFoundException, ParseException {
-        Bids bids = bidsTableView.getSelectionModel().getSelectedItem();
-        if (bids != null) {
-            BidMain bidMain = new BidMain();
-            bidMain.isNew = false;
-            bidMain.bidId = bids.getBidId();
-            bidMain.start(new Stage());
-        }
+    protected void addBidAction(ActionEvent event) {
+        JFXDialog dialog = new BidDialog().bidDialog(stackPane);
+        dialog.show();
     }
 
     @FXML
@@ -122,17 +114,17 @@ public class ViewBidsFXMLController implements Initializable {
         bidsTableView.setRowFactory(tv -> {
             TableRow<Bids> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                /*if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                
+               System.out.println(row);
+                
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Bids bids = row.getItem();
-//                    ItemMain itemMain = new ItemMain();
- //                   itemMain.isNew = false;
-//                    itemMain.itemNumber = new Bid().getItem(bids.getBidId());
-                    try {
-                        itemMain.start(new Stage());
-                    } catch (IOException ex) {
-                        System.err.println(ex.getMessage());
-                    }
-                }*/
+                    BidDialog bidDialog = new BidDialog();
+                    bidDialog.bidId = bids.getBidId();
+                    System.out.println(bids.getBidId());
+                    JFXDialog dialog = bidDialog.bidDialog(stackPane);
+                    dialog.show();
+                }
             });
             return row;
         });
@@ -140,6 +132,9 @@ public class ViewBidsFXMLController implements Initializable {
 
     /**
      * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {

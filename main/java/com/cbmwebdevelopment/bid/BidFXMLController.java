@@ -6,27 +6,27 @@
 package com.cbmwebdevelopment.bid;
 
 import java.net.URL;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.cbmwebdevelopment.alerts.Alerts;
 import com.cbmwebdevelopment.items.Item;
+import com.cbmwebdevelopment.notifications.SnackbarNotifications;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXTextArea;
+import com.jfoenix.controls.JFXTextField;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 
 /**
  * FXML Controller class
@@ -36,16 +36,16 @@ import javafx.scene.input.KeyCode;
 public class BidFXMLController implements Initializable {
 
     @FXML
-    public TextField itemNumberTextField, itemNameTextField, itemDescriptionTextField, bidderNumberTextField, bidAmountTextField;
+    VBox vBox;
+
+    @FXML
+    public JFXTextField itemNumberTextField, itemNameTextField, bidderNumberTextField, bidAmountTextField;
+
+    @FXML
+    JFXTextArea itemDescriptionTextArea;
 
     @FXML
     Label itemNumberLabel, itemNameLabel, itemDescriptionLabel, bidderNumberLabel, bidAmountLabel;
-
-    @FXML
-    public Button submitWinnerButton;
-
-    @FXML
-    public ProgressIndicator progressIndicator;
 
     protected String itemNumber, itemName, itemDescription, bidderNumber, bidAmount;
     private ArrayList<String> requiredFields;
@@ -58,92 +58,40 @@ public class BidFXMLController implements Initializable {
     private void assignValues() {
         itemNumber = itemNumberTextField.getText();
         itemName = itemNameTextField.getText();
-        itemDescription = itemDescriptionTextField.getText();
+        itemDescription = itemDescriptionTextArea.getText();
         bidderNumber = bidderNumberTextField.getText();
         bidAmount = bidAmountTextField.getText();
     }
 
+    /**
+     * Get the item information and display the name and description.
+     *
+     * @param id
+     * @param controller
+     */
     private void getItemInformation(String id, BidFXMLController controller) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
-            try {
-                progressIndicator.setVisible(true);
-                Item item = new Item();
-                item.getItem(id, controller);
-                executor.awaitTermination(2, TimeUnit.SECONDS);
-                executor.shutdown();
-            } catch (InterruptedException ex) {
-                System.err.println("Process Interrupted: " + ex.getMessage());
-            } finally {
-                if (!executor.isShutdown()) {
-                    executor.shutdownNow();
-                    System.err.println("Forced shutdown");
+            Item item = new Item();
+            HashMap<String, String> selectedItem = item.getItem(id);
+            Platform.runLater(() -> {
+                if (selectedItem.isEmpty()) {
+                    new SnackbarNotifications().errorSnackbar("That item does not exist.", vBox);
+                } else {
+                    itemNameTextField.setText(selectedItem.get("NAME"));
+                    itemDescriptionTextArea.setText(selectedItem.get("DESCRIPTION"));
+                    bidderNumberTextField.setDisable(false);
+                    bidAmountTextField.setDisable(false);
+                    bidderNumberTextField.requestFocus();
                 }
-                progressIndicator.setVisible(false);
-                bidderNumberTextField.setDisable(false);
-                bidAmountTextField.setDisable(false);
-                submitWinnerButton.setDisable(false);
-                bidderNumberTextField.requestFocus();
-            }
+            });
+
+            executor.shutdown();
+
         });
-    }
-
-    /**
-     * Initializes the controller class.
-     *
-     * @param url
-     * @param rb
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Hide the progress indicator
-        progressIndicator.setVisible(false);
-        progressIndicator.toFront();
-
-        // Disable everything except the item number textfield 
-        itemNameTextField.setDisable(true);
-        itemDescriptionTextField.setDisable(true);
-        bidderNumberTextField.setDisable(true);
-        bidAmountTextField.setDisable(true);
-        submitWinnerButton.setDisable(true);
-
-        itemNumberTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                itemNameTextField.setDisable(false);
-                itemDescriptionTextField.setDisable(false);
-                itemNameTextField.setEditable(false);
-                itemDescriptionTextField.setEditable(false);
-                bidderNumberTextField.setDisable(true);
-                bidAmountTextField.setDisable(true);
-                submitWinnerButton.setDisable(true);
-            } else {
-                itemNameTextField.setDisable(true);
-                itemDescriptionTextField.setDisable(true);
-                itemNameTextField.clear();
-                itemDescriptionTextField.clear();
-                bidderNumberTextField.clear();
-                bidAmountTextField.clear();
-            }
-        });
-
-        itemNumberTextField.setOnKeyReleased((event) -> {
-            if ((event.getCode() == KeyCode.TAB || event.getCode() == KeyCode.ENTER) && itemNumberTextField.getText() != null && !itemNumberTextField.getText().trim().isEmpty()) {
-                getItemInformation(itemNumberTextField.getText(), this);
-            }
-        });
-
-        // TODO
-    }
-
-    @FXML
-    protected void itemSearch(ActionEvent event) {
-        System.out.println("Get item information");
-        getItemInformation(itemNumberTextField.getText(), this);
     }
 
     public void loadBid(String bidId) {
-        progressIndicator.setVisible(true);
-        progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
             System.out.println("executor");
@@ -156,22 +104,31 @@ public class BidFXMLController implements Initializable {
                 Platform.runLater(() -> {
                     itemNumberTextField.setText(bidData.get("ITEM_ID"));
                     itemNameTextField.setText(bidData.get("ITEM_NAME"));
-                    itemDescriptionTextField.setText(bidData.get("ITEM_DESCRIPTION"));
+                    itemDescriptionTextArea.setText(bidData.get("ITEM_DESCRIPTION"));
                     bidderNumberTextField.setText(bidData.get("BIDDER_ID"));
                     bidAmountTextField.setText(bidData.get("BID_AMOUNT"));
-                    progressIndicator.setVisible(false);
-                    progressIndicator.setProgress(0.0);
                 });
             }
             executor.shutdown();
         });
     }
 
-    @FXML
-    protected void submitBid(ActionEvent event) throws ParseException {
+    protected void submitBid(JFXDialog dialog) {
         if (validateFields()) {
-            Bid bid = new Bid();
-            bid.submitBid(this);
+            ExecutorService executor = Executors.newCachedThreadPool();
+            executor.submit(() -> {
+                Bid bid = new Bid();
+                boolean success = bid.submitBid(bidAmount, bidderNumber, itemNumber, null); // This needs to be updated. 
+                Platform.runLater(() -> {
+                    if (success) {
+                        dialog.close();
+                    } else {
+                        new SnackbarNotifications().errorSnackbar("Bid failed to save.", vBox);
+                    }
+                });
+
+                executor.shutdown();
+            });
         } else {
             System.out.println("Not valid");
             Alert alert = new Alerts().errorAlert("Missing Items", "Missing required items.", "Please correct the following items", requiredFields);
@@ -217,6 +174,64 @@ public class BidFXMLController implements Initializable {
         }
 
         return isValid;
+    }
+
+    @FXML
+    protected void itemSearchAction(ActionEvent event) {
+        getItemInformation(itemNumberTextField.getText(), this);
+    }
+
+    /**
+     * Initialize any view properties. 
+     */
+    private void initViews() {
+        // Disable everything except the item number textfield 
+        itemNameTextField.setDisable(true);
+        itemDescriptionTextArea.setDisable(true);
+        bidderNumberTextField.setDisable(true);
+        bidAmountTextField.setDisable(true);
+    }
+
+    /**
+     * Set any action listeners
+     */
+    private void setListeners() {
+        itemNumberTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                itemNameTextField.setDisable(false);
+                itemDescriptionTextArea.setDisable(false);
+                itemNameTextField.setEditable(false);
+                itemDescriptionTextArea.setEditable(false);
+                bidderNumberTextField.setDisable(true);
+                bidAmountTextField.setDisable(true);
+            } else {
+                itemNameTextField.setDisable(true);
+                itemDescriptionTextArea.setDisable(true);
+                itemNameTextField.clear();
+                itemDescriptionTextArea.clear();
+                bidderNumberTextField.clear();
+                bidAmountTextField.clear();
+            }
+        });
+
+        itemNumberTextField.setOnKeyReleased((event) -> {
+            if ((event.getCode() == KeyCode.TAB || event.getCode() == KeyCode.ENTER) && itemNumberTextField.getText() != null && !itemNumberTextField.getText().trim().isEmpty()) {
+                getItemInformation(itemNumberTextField.getText(), this);
+            }
+        });
+
+    }
+
+    /**
+     * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        initViews();
+        setListeners();
     }
 
 }

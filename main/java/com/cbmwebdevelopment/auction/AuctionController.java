@@ -5,7 +5,6 @@
  */
 package com.cbmwebdevelopment.auction;
 
-import com.cbmwebdevelopment.items.ViewItemsFXMLController;
 import static com.cbmwebdevelopment.main.Values.AUCTION_FILTERS;
 import static com.cbmwebdevelopment.main.Values.AUCTION_TYPES;
 import static com.cbmwebdevelopment.main.Values.COUNTRIES;
@@ -35,7 +34,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -117,23 +115,6 @@ public class AuctionController implements Initializable {
         });
         
         dialog.show();
-        
-        /*try {
-            // Initialize the loader
-            FXMLLoader bidderListLoader = new FXMLLoader(getClass().getResource("/fxml/BidderListFXML.fxml"));
-            AnchorPane bidderListPane = bidderListLoader.load();
-            
-            // Get the bidder list controller to pass the auction ID to 
-            BidderListFXMLController bidderListController = (BidderListFXMLController) bidderListLoader.getController();
-            bidderListController.auctionId = auctionIdTextField.getText();
-
-            // Set the content
-            mainScrollPane.setContent(bidderListPane);
-
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }*/
-
     }
 
     /**
@@ -153,19 +134,14 @@ public class AuctionController implements Initializable {
 
     @FXML
     protected void addAuctionItemAction(ActionEvent even) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ViewItemsFXML.fxml"));
-            AnchorPane itemsPane = loader.load();
-            ViewItemsFXMLController viewItemsController = (ViewItemsFXMLController) loader.getController();
-            //viewItemsController.auctionController = this;
-
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }
-        //ViewItemsMain viewItemsMain = new ViewItemsMain();
-        // viewItemsMain.addItemsToAuction = true;
-        // viewItemsMain.auctionController = this;
-        // viewItemsMain.start(new Stage());
+        AuctionItemsDialog auctionItemsDialog = new AuctionItemsDialog();
+        JFXDialog dialog = auctionItemsDialog.auctionItemsDialog(auctionIdTextField.getText(), stackPane);
+        
+        dialog.setOnDialogClosed(evt -> {
+            refreshItemsTable(auctionIdTextField.getText());
+        });
+        
+        dialog.show();
     }
 
     @FXML
